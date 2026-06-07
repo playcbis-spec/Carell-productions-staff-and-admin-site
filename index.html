@@ -196,7 +196,7 @@
         }
         button:hover { opacity: 0.9; }
 
-        /* VIEWS (HOME & DRAFTS) */
+        /* VIEWS (HOME, DRAFTS, ABOUT) */
         .view-content { padding: 30px; display: none; flex-grow: 1; }
         .view-content.active { display: block; }
         
@@ -212,7 +212,21 @@
         .reaction-btn { width: auto; display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; margin-right: 10px; background: var(--card-sub); border: 1px solid var(--border); margin-top: 0; }
 
         /* Staff Directory Cards */
-        .directory-card { background: var(--card-sub); padding: 12px; border-radius: 8px; margin-top: 10px; border: 1px solid var(--border); font-size: 13px; line-height: 1.4; }
+        .directory-card { 
+            background: var(--card-sub); 
+            padding: 14px; 
+            border-radius: 8px; 
+            margin-top: 10px; 
+            border: 1px solid var(--border); 
+            font-size: 13px; 
+            line-height: 1.4; 
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .directory-card:hover { 
+            transform: translateY(-2px);
+            border-color: var(--accent);
+        }
         .directory-card strong { color: var(--accent); font-size: 14px; }
         .error-msg { color: var(--danger); margin-top: 10px; font-size: 13px; display: none; }
         
@@ -227,9 +241,55 @@
             color: var(--text-main);
             margin-top: 10px;
         }
+
+        /* Profile Layout Details */
+        .owner-profile-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 10px 10px;
+        }
+
+        /* Interactive Bio Pop-Up Window (Modal) */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            z-index: 200;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .modal-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 450px;
+            padding: 25px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            position: relative;
+        }
     </style>
 </head>
 <body>
+
+    <!-- INTERACTIVE BIO MODAL POP-UP -->
+    <div id="bioModal" class="modal-overlay" onclick="closeBioModal(event)">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <h3 id="modalName" style="font-size: 20px; margin-bottom: 2px; color: var(--text-main);">Staff Name</h3>
+            <p id="modalRole" style="color: var(--accent); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 15px;">Role</p>
+            
+            <div style="background: var(--card-sub); border: 1px solid var(--border); padding: 15px; border-radius: 8px; font-size: 14px; line-height: 1.5; margin-bottom: 20px;">
+                <h4 style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px;">About Me</h4>
+                <p id="modalBioText" style="color: var(--text-main);"></p>
+            </div>
+            <button onclick="document.getElementById('bioModal').style.display='none'" style="margin: 0; padding: 10px;">Close Profile</button>
+        </div>
+    </div>
 
     <!-- SIDE SETTINGS PANEL -->
     <div id="settingsDrawer" class="settings-drawer">
@@ -264,7 +324,8 @@
 
         <!-- Staff List Presentation Deck -->
         <div style="margin-top: 25px;">
-            <h3>Staff Directory</h3>
+            <h3 style="margin-bottom: 4px;">Staff Directory</h3>
+            <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">💡 Click a teammate to view their bio.</p>
             <div id="directoryContainer">
                 <!-- Javascript fills this dynamically -->
             </div>
@@ -280,6 +341,7 @@
             <div class="nav-icons">
                 <button id="homeTabBtn" class="nav-btn active" onclick="switchView('home')">🏠 Home</button>
                 <button id="draftsTabBtn" class="nav-btn" onclick="switchView('drafts')">✏️ Film Drafts</button>
+                <button id="aboutTabBtn" class="nav-btn" onclick="switchView('about')">👤 About the Owner</button>
                 <button class="nav-btn" onclick="toggleSettings()">⚙️ Settings</button>
                 <button class="logout-btn" onclick="handleLogout()">Log Out</button>
             </div>
@@ -370,6 +432,20 @@
                 </div>
             </div>
 
+            <!-- VIEW 3: ABOUT THE OWNER (BIOGRAPHY SCREEN) -->
+            <div id="aboutView" class="view-content">
+                <div class="section owner-profile-box">
+                    <h2 style="font-size: 26px; font-weight: 700; margin-bottom: 4px;">Cannon</h2>
+                    <p style="color: var(--accent); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px;">Founder, Director & Architect</p>
+                    
+                    <div style="text-align: left; font-size: 15px; line-height: 1.6; color: var(--text-main); background: var(--card-bg); padding: 22px; border-radius: 8px; border: 1px solid var(--border);">
+                        <p style="margin-bottom: 12px;">From back where I can remember, my mom was always singing around me and doing artsy, musical things in our home. Growing up in that creative atmosphere, I naturally picked it up right away and started diving into music from a very young age.</p>
+                        <p style="margin-bottom: 12px;">As I grew, my passion expanded into acting and film directing, allowing me to start bringing visual stories to life. From there, I discovered a love for structural design and got heavily into architecture.</p>
+                        <p>Today, I am a multi-talented arts and architecture 14-year-old upcoming professional, leading development on original productions and designs.</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -391,11 +467,25 @@
             } catch(e) {}
         }
 
-        // Initialize Accounts Matrix
+        // Initialize Accounts Matrix with editable Bio data blocks
         if (!localStorage.getItem('cp_accounts')) {
             const defaultAccounts = {
-                "AA": { name: "Alia", pass: "Alia7778881028", role: "Assistant Executive Producer", phone: "777-888-1028", email: "alia@carellproductions.com" },
-                "Cannon": { name: "Cannon", pass: "CB Canon 777-888-1127", role: "Company Owner & Director", phone: "777-888-1127", email: "cannon@carellproductions.com" }
+                "AA": { 
+                    name: "Alia", 
+                    pass: "Alia7778881028", 
+                    role: "Assistant Executive Producer", 
+                    phone: "777-888-1028", 
+                    email: "alia@carellproductions.com",
+                    bio: "Profile biography currently under construction. Check back soon to read about my background, roots, and upcoming work with Carell Productions!"
+                },
+                "Cannon": { 
+                    name: "Cannon", 
+                    pass: "CB Canon 777-888-1127", 
+                    role: "Company Owner & Director", 
+                    phone: "777-888-1127", 
+                    email: "cannon@carellproductions.com",
+                    bio: "From back where I can remember, my mom was always singing around me and doing artsy, musical things. Today, I am a multi-talented arts and architecture 14-year-old upcoming professional."
+                }
             };
             localStorage.setItem('cp_accounts', JSON.stringify(defaultAccounts));
         }
@@ -422,6 +512,22 @@
             document.getElementById('settingsDrawer').classList.toggle('open');
         }
 
+        function openBioModal(userKey) {
+            playClickSound();
+            const accounts = JSON.parse(localStorage.getItem('cp_accounts'));
+            const person = accounts[userKey];
+            if (person) {
+                document.getElementById('modalName').innerText = person.name;
+                document.getElementById('modalRole').innerText = person.role;
+                document.getElementById('modalBioText').innerText = person.bio || "No profile bio has been written yet for this staff member.";
+                document.getElementById('bioModal').style.display = 'flex';
+            }
+        }
+
+        function closeBioModal(event) {
+            document.getElementById('bioModal').style.display = 'none';
+        }
+
         function switchView(viewName) {
             playClickSound();
             document.querySelectorAll('.view-content').forEach(view => view.classList.remove('active'));
@@ -434,6 +540,9 @@
                 document.getElementById('draftsView').classList.add('active');
                 document.getElementById('draftsTabBtn').classList.add('active');
                 loadProjectScript();
+            } else if(viewName === 'about') {
+                document.getElementById('aboutView').classList.add('active');
+                document.getElementById('aboutTabBtn').classList.add('active');
             }
         }
 
@@ -519,22 +628,19 @@
             const container = document.getElementById('directoryContainer');
             container.innerHTML = "";
             
-            // Render existing baseline profiles (Cannon and Mom)
             for (let key in accounts) {
                 const person = accounts[key];
                 container.innerHTML += `
-                    <div class="directory-card">
+                    <div class="directory-card" onclick="openBioModal('${key}')">
                         <strong>${person.name}</strong> (${key})<br>
                         <span style="color:var(--text-muted); font-size:12px;">${person.role}</span>
-                        <div style="margin-top: 6px; font-size:12px; border-top: 1px solid var(--border); padding-top:4px;">
-                            Phone: ${person.phone || "Not Configured"}<br>
-                            Email: ${person.email || "Not Configured"}
+                        <div style="margin-top: 6px; font-size:11px; color: var(--accent); font-weight: 500;">
+                            Tap to view bio →
                         </div>
                     </div>
                 `;
             }
 
-            // Clean "Under Construction" notice block for incoming team members
             container.innerHTML += `
                 <div class="construction-banner">
                     🔨 <strong>Roster Update in Progress</strong><br>
