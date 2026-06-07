@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carell Productions™ Staff Portal</title>
     <style>
-        /* Base Theme Config Variable Architecture */
+        /* Modern App Styling Themes */
         :root {
             --bg-color: #0a0a0c;
             --card-bg: #121215;
@@ -17,10 +17,9 @@
             --border: #222226;
             --danger: #f43f5e;
             --success: #10b981;
-            --backdrop: transparent;
+            --nav-bg: #111115;
         }
 
-        /* Light Mode Overrides */
         [data-theme="light"] {
             --bg-color: #f4f4f7;
             --card-bg: #ffffff;
@@ -32,10 +31,9 @@
             --border: #e5e7eb;
             --danger: #e11d48;
             --success: #059669;
-            --backdrop: transparent;
+            --nav-bg: #e2e8f0;
         }
 
-        /* Apple Liquid Glass Overrides */
         [data-theme="glass"] {
             --bg-color: #0d1117;
             --card-bg: rgba(255, 255, 255, 0.06);
@@ -47,15 +45,14 @@
             --border: rgba(255, 255, 255, 0.12);
             --danger: #ff453a;
             --success: #30d158;
-            --backdrop: blur(25px);
+            --nav-bg: rgba(255, 255, 255, 0.04);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            letter-spacing: -0.01em;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         body {
@@ -65,421 +62,342 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 30px 20px;
-            transition: background 0.4s ease, color 0.4s ease;
+            padding: 20px;
+            transition: background 0.3s ease;
             position: relative;
             overflow-x: hidden;
         }
 
-        /* Liquid Glass Background Dynamic Canvas Elements */
+        /* Apple Liquid Glass Background Canvas Graphic */
         body::before {
             content: "";
             position: fixed;
-            top: -10%;
-            left: -10%;
-            width: 120%;
-            height: 120%;
-            background: radial-gradient(circle at 20% 30%, #1e1b4b 0%, transparent 40%),
-                        radial-gradient(circle at 80% 70%, #2e1065 0%, transparent 45%);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 15% 20%, #1e1b4b 0%, transparent 45%),
+                        radial-gradient(circle at 85% 80%, #2e1065 0%, transparent 45%);
             z-index: -1;
             opacity: 0;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.4s ease;
         }
-        [data-theme="glass"]::before {
-            opacity: 1;
-        }
+        [data-theme="glass"]::before { opacity: 1; }
 
         .container {
             width: 100%;
-            max-width: 900px;
+            max-width: 850px;
             background: var(--card-bg);
-            backdrop-filter: var(--backdrop);
-            -webkit-backdrop-filter: var(--backdrop);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-radius: 12px;
             border: 1px solid var(--border);
             overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            transition: background 0.4s ease, border 0.4s ease, box-shadow 0.4s ease;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            min-height: 500px;
         }
 
-        /* Dynamic Animated Header Block */
-        .gradient-header {
-            background: linear-gradient(-45deg, #0f0c1b, #150d22, #070913, #0d111c);
-            background-size: 300% 300%;
-            animation: slowGradient 18s ease infinite;
-            padding: 35px 20px;
-            text-align: center;
+        /* HEADER NAVIGATION BAR */
+        .top-nav-bar {
+            background: var(--nav-bg);
             border-bottom: 1px solid var(--border);
-            border-radius: 12px 12px 0 0;
-            position: relative;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            display: none; /* Hidden until login */
         }
 
-        [data-theme="light"] .gradient-header {
-            background: linear-gradient(-45deg, #f1f5f9, #e2e8f0, #f8fafc, #edf2f7);
-        }
-
-        [data-theme="glass"] .gradient-header {
-            background: rgba(255, 255, 255, 0.02);
-            border-bottom: 1px solid var(--border);
-        }
-
-        @keyframes slowGradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .gradient-header h1 {
+        .nav-logo {
+            font-size: 15px;
             font-weight: 700;
-            font-size: 26px;
-            letter-spacing: -0.03em;
-            text-transform: uppercase;
-            color: #ffffff;
-            text-shadow: 0 0 20px rgba(255,255,255,0.1);
-        }
-        [data-theme="light"] .gradient-header h1 {
-            color: #111827;
-            text-shadow: none;
-        }
-
-        .gradient-header p {
-            color: var(--text-muted);
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            margin-top: 6px;
-        }
-
-        /* Login System */
-        .login-box {
-            padding: 50px 30px;
-            max-width: 420px;
-            margin: 0 auto;
-        }
-
-        .login-box h2 {
-            font-size: 20px;
-            font-weight: 500;
-            margin-bottom: 25px;
+            letter-spacing: 0.5px;
             color: var(--text-main);
-            text-align: center;
         }
+
+        .nav-icons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: var(--card-sub);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+        .nav-btn:hover { background: var(--border); }
+        .nav-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+        .logout-btn {
+            background: rgba(244, 63, 94, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        /* SLIDE-OUT SETTINGS PANEL */
+        .settings-drawer {
+            position: fixed;
+            top: 0;
+            right: -340px;
+            width: 320px;
+            height: 100%;
+            background: var(--card-bg);
+            border-left: 1px solid var(--border);
+            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+            z-index: 100;
+            transition: right 0.3s ease;
+            padding: 25px;
+            overflow-y: auto;
+        }
+        .settings-drawer.open { right: 0; }
+        .settings-drawer h3 { margin-bottom: 15px; font-size: 16px; border-bottom: 1px solid var(--border); padding-bottom: 6px; color: var(--text-main); }
+        .settings-drawer h4 { font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; margin-top: 14px;}
+
+        /* LOGIN WINDOW */
+        .login-box { padding: 60px 20px; max-width: 360px; margin: auto; text-align: center; }
+        .login-box h2 { font-size: 20px; margin-bottom: 22px; font-weight: 600; }
 
         input, textarea, select {
             width: 100%;
-            padding: 14px;
-            margin: 8px 0;
+            padding: 12px;
+            margin: 6px 0;
             background-color: var(--card-sub);
             border: 1px solid var(--border);
             color: var(--text-main);
             border-radius: 8px;
             font-size: 15px;
-            transition: all 0.2s ease;
-        }
-
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 2px var(--accent-dim);
         }
 
         button {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             background-color: var(--accent);
-            color: #ffffff;
+            color: white;
             border: none;
             border-radius: 8px;
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            margin-top: 12px;
-            transition: opacity 0.2s ease, background 0.2s ease;
+            margin-top: 6px;
         }
-
         button:hover { opacity: 0.9; }
 
-        .error-msg {
-            color: var(--danger);
-            margin-top: 12px;
-            display: none;
-            font-size: 13px;
-            text-align: center;
-        }
-
-        /* Workspace Elements */
-        .dashboard { display: none; }
-        .main-content { padding: 30px; }
+        /* VIEWS (HOME & DRAFTS) */
+        .view-content { padding: 30px; display: none; flex-grow: 1; }
+        .view-content.active { display: block; }
         
-        .section {
-            background: var(--card-sub);
-            padding: 25px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            border: 1px solid var(--border);
-            transition: background 0.4s ease, border 0.4s ease;
-        }
+        .section { background: var(--card-sub); padding: 22px; border-radius: 10px; margin-bottom: 22px; border: 1px solid var(--border); }
+        .management-only { display: none; border-color: #6d28d9; }
 
-        .management-only {
-            display: none;
-            border-color: rgba(167, 139, 250, 0.3);
-            background: linear-gradient(180deg, var(--card-sub) 0%, rgba(15, 9, 25, 0.4) 100%);
-        }
+        .status-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 12px; }
+        .status-out { background: rgba(244,63,94,0.1); color: var(--danger); }
+        .status-in { background: rgba(16,185,129,0.1); color: var(--success); }
 
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-        }
+        .log-item { background: var(--card-bg); padding: 10px; border-radius: 6px; margin-top: 8px; font-size: 14px; border: 1px solid var(--border); border-left: 3px solid var(--accent); }
+        .feedback-deck { background: var(--card-bg); padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid var(--border); }
+        .reaction-btn { width: auto; display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; margin-right: 10px; background: var(--card-sub); border: 1px solid var(--border); margin-top: 0; }
 
-        @media (max-width: 750px) {
-            .grid { grid-template-columns: 1fr; }
-        }
-
-        h3 {
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-main);
-            margin-bottom: 15px;
-        }
-
-        h4 {
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-weight: 600;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        .status-out {
-            background: rgba(244, 63, 94, 0.1);
-            color: var(--danger);
-            border: 1px solid rgba(244, 63, 94, 0.2);
-        }
-        .status-in {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-
-        .log-item {
-            background: var(--card-bg);
+        /* Staff Directory Cards */
+        .directory-card { background: var(--card-sub); padding: 12px; border-radius: 8px; margin-top: 10px; border: 1px solid var(--border); font-size: 13px; line-height: 1.4; }
+        .directory-card strong { color: var(--accent); font-size: 14px; }
+        .error-msg { color: var(--danger); margin-top: 10px; font-size: 13px; display: none; }
+        
+        /* Progress Banner Style */
+        .construction-banner {
+            background: rgba(99, 102, 241, 0.08);
+            border: 1px dashed var(--accent);
             padding: 12px;
-            border-radius: 6px;
-            margin-top: 10px;
-            font-size: 14px;
-            border: 1px solid var(--border);
-            border-left: 3px solid var(--accent);
-        }
-
-        /* Review and Assessment Deck */
-        .feedback-deck {
-            background: var(--card-bg);
-            padding: 20px;
             border-radius: 8px;
-            margin-top: 20px;
-            border: 1px solid var(--border);
-        }
-        
-        .reaction-btn {
-            width: auto;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 16px;
-            margin-right: 12px;
-            background: var(--card-sub);
-            border: 1px solid var(--border);
-            font-size: 14px;
-            margin-top: 0;
-        }
-
-        .logout-btn {
-            position: absolute;
-            top: 32px;
-            right: 25px;
-            background: rgba(244, 63, 94, 0.1);
-            border: 1px solid rgba(244, 63, 94, 0.3);
-            color: var(--danger);
-            padding: 6px 14px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border-radius: 4px;
-            width: auto;
-            margin-top: 0;
-            display: none;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-main);
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Main Console Header Block -->
-        <div class="gradient-header">
-            <h1>Carell Productions™</h1>
-            <p>Internal Operations Environment</p>
-            <button id="logoutBtn" class="logout-btn" onclick="handleLogout()">Exit Terminal</button>
+    <!-- SIDE SETTINGS PANEL -->
+    <div id="settingsDrawer" class="settings-drawer">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 style="margin: 0; border: none; padding: 0;">Settings</h3>
+            <button class="nav-btn" onclick="toggleSettings()" style="margin: 0; padding: 5px 10px;">✕</button>
         </div>
 
-        <!-- LOGIN SCREEN INTERFACE -->
-        <div id="loginScreen" class="login-box">
-            <h2>Authorized Access Required</h2>
-            <input type="text" id="username" placeholder="Secure Username" autocomplete="off">
-            <input type="password" id="password" placeholder="Access Key Code">
-            <button onclick="handleLogin()">Verification Sign In</button>
-            <div id="errorMsg" class="error-msg">Invalid username or password</div>
+        <!-- Color Style Option Panel -->
+        <div>
+            <h4>App Style Theme</h4>
+            <select id="themeSelect" onchange="changeSystemTheme()">
+                <option value="charcoal">Deep Charcoal</option>
+                <option value="light">Light Mode</option>
+                <option value="glass">Apple Liquid Glass</option>
+            </select>
         </div>
 
-        <!-- OPERATIONAL DASHBOARD INTERFACE -->
-        <div id="dashboardScreen" class="dashboard">
-            <div class="main-content">
-                
-                <!-- Overview and Core Directives Board -->
-                <div class="section">
-                    <h2 id="welcomeText" style="font-weight: 600; font-size: 22px;">Welcome, System User</h2>
-                    <p id="roleText" style="color: var(--accent); margin-top: 4px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Assignment: Crew</p>
-                    
-                    <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
-                    
-                    <h3 style="color: var(--accent);">Executive Directives</h3>
-                    <div id="ownerRepliesBox" style="background: var(--card-bg); padding: 14px; border-radius: 6px; margin-bottom: 20px; border: 1px solid var(--border); font-size: 14px; color: var(--text-main); line-height: 1.5;">
-                        <span style="color: var(--text-muted); font-style: italic;">No active review pins from the Director.</span>
-                    </div>
+        <!-- Credentials Mod Block -->
+        <div>
+            <h4>Change Login Info</h4>
+            <input type="text" id="editUsername" placeholder="Username">
+            <input type="password" id="editPassword" placeholder="Password">
+            
+            <h4>Your Contact Card</h4>
+            <input type="text" id="editPhone" placeholder="Phone Number">
+            <input type="text" id="editEmail" placeholder="Email Address">
+            
+            <button onclick="updateAccountInfo()" style="padding: 10px; font-size: 13px; margin-top: 10px;">Save Profile Info</button>
+            <p id="settingsStatus" style="font-size: 12px; color: var(--success); margin-top: 6px; display: none;">✓ Changes saved successfully!</p>
+        </div>
 
-                    <h3>Production Announcements</h3>
-                    <p id="announcementBox" style="color: var(--text-muted); font-size: 14px; line-height: 1.6;">Secure console online. Record operational tracking logs, write development scripts, and sync configurations directly to the secure infrastructure layer.</p>
-                </div>
-
-                <!-- Environment Controls & Account Settings Area -->
-                <div class="grid">
-                    <!-- Theme & Layout Styling -->
-                    <div class="section">
-                        <h3>Console Configuration</h3>
-                        <div style="margin-bottom: 12px;">
-                            <h4>UI Workspace Theme</h4>
-                            <select id="themeSelect" onchange="changeSystemTheme()">
-                                <option value="charcoal">Deep Charcoal</option>
-                                <option value="light">High Contrast Light</option>
-                                <option value="glass">Apple Liquid Glass</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Live Dynamic Profile Access Setting Engine -->
-                    <div class="section">
-                        <h3>Identity Management</h3>
-                        <div style="margin-bottom: 8px;">
-                            <h4>Modify Passkey Parameters</h4>
-                            <input type="text" id="editUsername" placeholder="Update Account Username" style="padding: 10px; font-size: 13px; margin: 4px 0;">
-                            <input type="password" id="editPassword" placeholder="Update Secure Key Code" style="padding: 10px; font-size: 13px; margin: 4px 0;">
-                            <button onclick="updateAccountCredentials()" style="padding: 10px; font-size: 12px; margin-top: 6px; background-color: var(--card-bg); border: 1px solid var(--border); color: var(--text-main);">Commit Profile Changes</button>
-                            <p id="settingsStatus" style="font-size: 12px; color: var(--success); margin-top: 6px; display: none;">System profile state updated.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid">
-                    <!-- Session Telemetry Tracking -->
-                    <div class="section">
-                        <h3>Operations Logging</h3>
-                        <p style="margin-bottom: 15px; font-size: 14px; color: var(--text-muted);">Current Operational Status: <span id="currentStatus" class="status-badge status-out">Offline</span></p>
-                        <button id="clockBtn" onclick="toggleClock()" style="background-color: var(--success);">Initiate Session</button>
-                        <p style="font-size: 11px; color: var(--text-muted); margin-top: 12px;" id="timeLog">Last Record: System Standby</p>
-                    </div>
-
-                    <!-- Dispatch Transmissions Box -->
-                    <div class="section">
-                        <h3>Transmit Executive Report</h3>
-                        <textarea id="msgInput" rows="3" placeholder="Type a transmission, progress update, or file log directly to the Director..."></textarea>
-                        <button onclick="sendMessage()" style="background-color: var(--accent);">Queue Transmission</button>
-                        <p id="msgStatus" style="font-size: 12px; color: var(--success); margin-top: 8px; display: none;">Transmission dispatched successfully.</p>
-                    </div>
-                </div>
-
-                <!-- Shared Central Workspace Repository -->
-                <div class="section" style="border-color: var(--accent);">
-                    <h3 style="color: var(--accent);">Central Production Script Sandbox</h3>
-                    <select id="projectSelect" onchange="loadProjectScript()">
-                        <option value="Secret">Project: "Secret" Album Configuration</option>
-                        <option value="General">General Script & Narrative Outlines</option>
-                    </select>
-                    <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;" id="lastSavedText">Last Repository Sync: Never</p>
-                    <textarea id="scriptArea" rows="10" style="font-family: 'Courier New', Courier, monospace; font-size: 14px; line-height: 1.5;" placeholder="Enter asset scripts, lyrics, project blueprints, or outlines here... Synchronizes immediately upon command execution."></textarea>
-                    <button onclick="saveScript()" style="background-color: var(--accent);">Push & Sync Changes</button>
-                    <p id="saveStatus" style="font-size: 12px; color: var(--success); margin-top: 8px; display: none;">Changes successfully committed to repository state.</p>
-
-                    <!-- Evaluation Deck (Emojis intentionally constrained here) -->
-                    <div class="feedback-deck">
-                        <h4 style="margin-bottom: 12px; color: var(--text-main);">Executive Evaluation Deck</h4>
-                        <div style="margin-bottom: 15px;">
-                            <button class="reaction-btn" id="likeBtn" onclick="submitReaction('like')">👍 <span id="likeCount">0</span></button>
-                            <button class="reaction-btn" id="dislikeBtn" onclick="submitReaction('dislike')">👎 <span id="dislikeCount">0</span></button>
-                        </div>
-                        <div id="commentBox" style="font-size: 13px; color: var(--text-main); background: var(--card-sub); padding: 12px; border-radius: 6px; border-left: 3px solid var(--accent); line-height: 1.5;">
-                            <span style="font-weight: 600; color: var(--accent);">Director Notes:</span> <span id="commentText" style="color: var(--text-muted);">No notes evaluated for this project file yet.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- DIRECTOR CONTROL CENTER CONSOLE OVERLAY -->
-                <div id="managementSection" class="section management-only">
-                    <h3 style="color: #a78bfa; font-size: 18px; border-bottom: 1px solid rgba(167, 139, 250, 0.3); padding-bottom: 10px; margin-bottom: 20px;">Director Command Console</h3>
-                    
-                    <div style="margin-bottom: 25px; background: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
-                        <h4 style="color: var(--text-main); margin-bottom: 8px;">Transmit Review Pin to Dashboard</h4>
-                        <textarea id="ownerReplyInput" rows="2" placeholder="Write a response directive to flash onto staff headers..."></textarea>
-                        <button onclick="sendOwnerReply()" style="background-color: var(--success); width: auto; padding: 10px 20px; font-size: 13px;">Publish Directive</button>
-                    </div>
-
-                    <div style="margin-bottom: 25px;">
-                        <h4 style="color: var(--text-main); margin-bottom: 8px;">Append File Evaluation Comment</h4>
-                        <input type="text" id="executiveCommentInput" placeholder="Add an official evaluation note to the active project file above...">
-                        <button onclick="saveExecutiveComment()" style="background-color: var(--accent); width: auto; padding: 10px 20px; font-size: 13px;">Attach Note</button>
-                    </div>
-
-                    <div style="margin-bottom: 25px;">
-                        <h4 style="color: var(--text-main); margin-bottom: 10px;">Incoming Staff Dispatches</h4>
-                        <div id="incomingMessagesBox" style="max-height: 200px; overflow-y: auto; background: var(--card-bg); padding: 12px; border-radius: 6px; border: 1px solid var(--border);">
-                            <p style="color: var(--text-muted); font-style: italic; font-size: 13px;">No data frames caught in buffer.</p>
-                        </div>
-                        <button onclick="clearMessages()" style="background-color: var(--card-bg); color: var(--danger); border: 1px solid var(--border); font-size: 11px; padding: 6px 12px; width: auto; margin-top: 10px; text-transform: uppercase;">Purge Logs</button>
-                    </div>
-
-                    <div>
-                        <h4 style="color: var(--text-main); margin-bottom: 10px;">Operational Session Telemetry</h4>
-                        <div id="masterClockBox" style="max-height: 200px; overflow-y: auto; background: var(--card-bg); padding: 12px; border-radius: 6px; border: 1px solid var(--border);">
-                            <p style="color: var(--text-muted); font-style: italic; font-size: 13px;">No telemetry frames caught in buffer.</p>
-                        </div>
-                        <button onclick="clearClockLogs()" style="background-color: var(--card-bg); color: var(--danger); border: 1px solid var(--border); font-size: 11px; padding: 6px 12px; width: auto; margin-top: 10px; text-transform: uppercase;">Purge Telemetry</button>
-                    </div>
-                </div>
-
+        <!-- Staff List Presentation Deck -->
+        <div style="margin-top: 25px;">
+            <h3>Staff Directory</h3>
+            <div id="directoryContainer">
+                <!-- Javascript fills this dynamically -->
             </div>
         </div>
     </div>
 
+    <!-- MAIN CENTRAL PLATFORM CONTAINER -->
+    <div class="container">
+        
+        <!-- HEADER TOOLBAR NAVIGATION -->
+        <div id="topNav" class="top-nav-bar">
+            <div class="nav-logo">Carell Productions™</div>
+            <div class="nav-icons">
+                <button id="homeTabBtn" class="nav-btn active" onclick="switchView('home')">🏠 Home</button>
+                <button id="draftsTabBtn" class="nav-btn" onclick="switchView('drafts')">✏️ Film Drafts</button>
+                <button class="nav-btn" onclick="toggleSettings()">⚙️ Settings</button>
+                <button class="logout-btn" onclick="handleLogout()">Log Out</button>
+            </div>
+        </div>
+
+        <!-- SIGN IN COMPONENT -->
+        <div id="loginScreen" class="login-box">
+            <h2>Sign In</h2>
+            <input type="text" id="username" placeholder="Username" autocomplete="off">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="handleLogin()">Sign In</button>
+            <div id="errorMsg" class="error-msg">Incorrect username or password</div>
+        </div>
+
+        <!-- APP DASHBOARD SCREEN -->
+        <div id="dashboardScreen" style="display: none; flex-grow: 1; flex-direction: column;">
+            
+            <!-- VIEW 1: CLEAN HOME SCREEN GREETING -->
+            <div id="homeView" class="view-content active">
+                <div class="section" style="text-align: center; padding: 50px 20px;">
+                    <h2 id="welcomeText" style="font-size: 28px; font-weight: 700; margin-bottom: 6px;">Welcome</h2>
+                    <p id="roleText" style="color: var(--accent); font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Title: Staff Member</p>
+                </div>
+
+                <div class="section">
+                    <h3>Director Notes From Cannon</h3>
+                    <div id="ownerRepliesBox" style="background: var(--card-bg); padding: 14px; border-radius: 6px; margin-bottom: 15px; border: 1px solid var(--border); font-size: 14px; line-height: 1.5;">
+                        <span style="color: var(--text-muted); font-style: italic;">No alerts pinned by Cannon yet.</span>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>Time Clock Terminal</h3>
+                    <p style="margin-bottom: 12px; font-size: 14px; color: var(--text-muted);">Status: <span id="currentStatus" class="status-badge status-out">Clocked Out</span></p>
+                    <button id="clockBtn" onclick="toggleClock()" style="background-color: var(--success); width: auto; padding: 10px 20px;">Clock In</button>
+                    <p style="font-size: 11px; color: var(--text-muted); margin-top: 10px;" id="timeLog">Last Record: None</p>
+                </div>
+            </div>
+
+            <!-- VIEW 2: PRODUCTION FILM DRAFTS & SCRIPTS -->
+            <div id="draftsView" class="view-content">
+                <div class="section" style="border-color: var(--accent);">
+                    <h3>Shared Film Script Board</h3>
+                    <select id="projectSelect" onchange="loadProjectScript()">
+                        <option value="Secret">Project: "Secret" Album Scripts & Tracklists</option>
+                        <option value="General">General Production Notes & Outlines</option>
+                    </select>
+                    <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;" id="lastSavedText">Last Synced: Never</p>
+                    <textarea id="scriptArea" rows="12" style="font-size: 14px; line-height: 1.5;" placeholder="Type ideas, lyrics, or scene dialogue blocks here. Hit save to push files into device sync memory."></textarea>
+                    <button onclick="saveScript()" style="background-color: var(--accent);">Save Script File</button>
+                    <p id="saveStatus" style="font-size: 12px; color: var(--success); margin-top: 8px; display: none;">✓ Changes saved to system profile configuration.</p>
+
+                    <div class="feedback-deck">
+                        <h4 style="margin-bottom: 10px; color: var(--text-main); font-size: 13px;">Project Review Matrix</h4>
+                        <div style="margin-bottom: 12px;">
+                            <button class="reaction-btn" id="likeBtn" onclick="submitReaction('like')">👍 <span id="likeCount">0</span></button>
+                            <button class="reaction-btn" id="dislikeBtn" onclick="submitReaction('dislike')">👎 <span id="dislikeCount">0</span></button>
+                        </div>
+                        <div id="commentBox" style="font-size: 13px; color: var(--text-main); background: var(--card-sub); padding: 12px; border-radius: 6px; border-left: 3px solid var(--accent); line-height: 1.5;">
+                            <span style="font-weight: 600; color: var(--accent);">Cannon's Feedback:</span> <span id="commentText" style="color: var(--text-muted);">No review comments attached to this outline yet.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OWNER PANEL (CANNON ONLY) -->
+                <div id="managementSection" class="section management-only">
+                    <h3 style="color: #a78bfa; font-size: 16px; border-bottom: 1px solid #4c1d95; padding-bottom: 8px; margin-bottom: 15px;">Director Panel (Cannon Only)</h3>
+                    
+                    <div style="margin-bottom: 20px; background: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
+                        <h4 style="margin:0 0 6px 0; color:var(--text-main);">Pin Note to Home Screen Display</h4>
+                        <textarea id="ownerReplyInput" rows="2" placeholder="Write a response message or tracking note..."></textarea>
+                        <button onclick="sendOwnerReply()" style="background-color: var(--success); width: auto; padding: 8px 16px; font-size: 13px;">Post Note</button>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="margin:0 0 6px 0; color:var(--text-main);">Attach Comment Review to Project</h4>
+                        <input type="text" id="executiveCommentInput" placeholder="Add an official evaluation comment...">
+                        <button onclick="saveExecutiveComment()" style="background-color: var(--accent); width: auto; padding: 8px 16px; font-size: 13px;">Submit Comment</button>
+                    </div>
+
+                    <div>
+                        <h4 style="margin:0 0 6px 0; color:var(--text-main);">Staff Telemetry Tracking Log</h4>
+                        <div id="masterClockBox" style="max-height: 180px; overflow-y: auto; background: var(--card-bg); padding: 12px; border-radius: 6px; border: 1px solid var(--border);">
+                            <p style="color: var(--text-muted); font-style: italic; font-size: 13px;">No session logs tracked yet.</p>
+                        </div>
+                        <button onclick="clearClockLogs()" style="background-color: var(--card-bg); color: var(--danger); border: 1px solid var(--border); font-size: 11px; padding: 6px 12px; width: auto; margin-top: 10px;">Clear Clock Records</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     <script>
-        // Set default system data structures dynamically inside local storage if not initialized
+        // Clean Professional Tap UI Audio Wave Sound Generator
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playClickSound() {
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(580, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.07);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.07);
+            } catch(e) {}
+        }
+
+        // Initialize Accounts Matrix
         if (!localStorage.getItem('cp_accounts')) {
-            const initialAccounts = {
-                "AA": { name: "Alia", pass: "Alia7778881028", role: "Assistant Executive Producer" },
-                "Cannon": { name: "Cannon", pass: "CB Canon 777-888-1127", role: "Company Owner & Director" }
+            const defaultAccounts = {
+                "AA": { name: "Alia", pass: "Alia7778881028", role: "Assistant Executive Producer", phone: "777-888-1028", email: "alia@carellproductions.com" },
+                "Cannon": { name: "Cannon", pass: "CB Canon 777-888-1127", role: "Company Owner & Director", phone: "777-888-1127", email: "cannon@carellproductions.com" }
             };
-            localStorage.setItem('cp_accounts', JSON.stringify(initialAccounts));
+            localStorage.setItem('cp_accounts', JSON.stringify(defaultAccounts));
         }
 
         let currentUser = null;
@@ -487,7 +405,6 @@
         let isClockedIn = false;
 
         window.onload = function() {
-            // Apply theme configuration immediately upon load frame
             const activeTheme = localStorage.getItem('cp_system_theme') || 'charcoal';
             document.documentElement.setAttribute('data-theme', activeTheme);
             document.getElementById('themeSelect').value = activeTheme;
@@ -497,9 +414,31 @@
             if (savedUserKey && accounts[savedUserKey]) {
                 setupDashboard(savedUserKey);
             }
+            renderDirectory();
+        }
+
+        function toggleSettings() {
+            playClickSound();
+            document.getElementById('settingsDrawer').classList.toggle('open');
+        }
+
+        function switchView(viewName) {
+            playClickSound();
+            document.querySelectorAll('.view-content').forEach(view => view.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            if(viewName === 'home') {
+                document.getElementById('homeView').classList.add('active');
+                document.getElementById('homeTabBtn').classList.add('active');
+            } else if(viewName === 'drafts') {
+                document.getElementById('draftsView').classList.add('active');
+                document.getElementById('draftsTabBtn').classList.add('active');
+                loadProjectScript();
+            }
         }
 
         function handleLogin() {
+            playClickSound();
             const userIn = document.getElementById('username').value.trim();
             const passIn = document.getElementById('password').value;
             const errorElement = document.getElementById('errorMsg');
@@ -520,14 +459,16 @@
             currentUser = accounts[userKey];
             
             document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('dashboardScreen').style.display = 'block';
-            document.getElementById('logoutBtn').style.display = 'block';
+            document.getElementById('topNav').style.display = 'flex';
+            document.getElementById('dashboardScreen').style.display = 'flex';
             
             document.getElementById('welcomeText').innerText = `Welcome, ${currentUser.name}`;
-            document.getElementById('roleText').innerText = `Assignment: ${currentUser.role}`;
+            document.getElementById('roleText').innerText = `Title: ${currentUser.role}`;
             
             document.getElementById('editUsername').value = userKey;
             document.getElementById('editPassword').value = currentUser.pass;
+            document.getElementById('editPhone').value = currentUser.phone || "";
+            document.getElementById('editEmail').value = currentUser.email || "";
 
             loadOwnerReplies();
             
@@ -538,18 +479,23 @@
                 document.getElementById('managementSection').style.display = 'none';
             }
             
-            loadProjectScript();
+            renderDirectory();
         }
 
-        function updateAccountCredentials() {
+        function updateAccountInfo() {
+            playClickSound();
             const accounts = JSON.parse(localStorage.getItem('cp_accounts'));
             const newUsername = document.getElementById('editUsername').value.trim();
             const newPassword = document.getElementById('editPassword').value;
+            const newPhone = document.getElementById('editPhone').value.trim();
+            const newEmail = document.getElementById('editEmail').value.trim();
             const statusLabel = document.getElementById('settingsStatus');
 
             if (newUsername !== "" && newPassword !== "") {
                 const profileData = accounts[currentUserKey];
                 profileData.pass = newPassword;
+                profileData.phone = newPhone;
+                profileData.email = newEmail;
 
                 if (newUsername !== currentUserKey) {
                     delete accounts[currentUserKey];
@@ -568,25 +514,58 @@
             }
         }
 
+        function renderDirectory() {
+            const accounts = JSON.parse(localStorage.getItem('cp_accounts')) || {};
+            const container = document.getElementById('directoryContainer');
+            container.innerHTML = "";
+            
+            // Render existing baseline profiles (Cannon and Mom)
+            for (let key in accounts) {
+                const person = accounts[key];
+                container.innerHTML += `
+                    <div class="directory-card">
+                        <strong>${person.name}</strong> (${key})<br>
+                        <span style="color:var(--text-muted); font-size:12px;">${person.role}</span>
+                        <div style="margin-top: 6px; font-size:12px; border-top: 1px solid var(--border); padding-top:4px;">
+                            Phone: ${person.phone || "Not Configured"}<br>
+                            Email: ${person.email || "Not Configured"}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Clean "Under Construction" notice block for incoming team members
+            container.innerHTML += `
+                <div class="construction-banner">
+                    🔨 <strong>Roster Update in Progress</strong><br>
+                    Additional staff contacts will appear here soon.
+                </div>
+            `;
+        }
+
         function changeSystemTheme() {
+            playClickSound();
             const selectedTheme = document.getElementById('themeSelect').value;
             document.documentElement.setAttribute('data-theme', selectedTheme);
             localStorage.setItem('cp_system_theme', selectedTheme);
         }
 
         function handleLogout() {
+            playClickSound();
             localStorage.removeItem('cp_active_session_user');
             currentUser = null;
             currentUserKey = null;
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('dashboardScreen').style.display = 'none';
-            document.getElementById('logoutBtn').style.display = 'none';
             document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('topNav').style.display = 'none';
+            document.getElementById('dashboardScreen').style.display = 'none';
+            document.getElementById('settingsDrawer').classList.remove('open');
             document.getElementById('username').value = "";
             document.getElementById('password').value = "";
+            switchView('home');
         }
 
         function toggleClock() {
+            playClickSound();
             const statusBadge = document.getElementById('currentStatus');
             const btn = document.getElementById('clockBtn');
             const log = document.getElementById('timeLog');
@@ -595,21 +574,21 @@
             let textAction = "";
             if (!isClockedIn) {
                 isClockedIn = true;
-                statusBadge.innerText = "Active Session";
+                statusBadge.innerText = "Clocked In";
                 statusBadge.className = "status-badge status-in";
-                btn.innerText = "Terminate Session";
+                btn.innerText = "Clock Out";
                 btn.style.backgroundColor = "var(--danger)";
-                textAction = `Session Active [${now}]`;
+                textAction = `Clocked In on ${now}`;
             } else {
                 isClockedIn = false;
-                statusBadge.innerText = "Offline";
+                statusBadge.innerText = "Clocked Out";
                 statusBadge.className = "status-badge status-out";
-                btn.innerText = "Initiate Session";
+                btn.innerText = "Clock In";
                 btn.style.backgroundColor = "var(--success)";
-                textAction = `Session Offline [${now}]`;
+                textAction = `Clocked Out on ${now}`;
             }
             
-            log.innerText = `Last Record: ${textAction}`;
+            log.innerText = `Last Action: ${textAction}`;
 
             let clockLogs = JSON.parse(localStorage.getItem('cp_clock_logs')) || [];
             clockLogs.unshift({ user: currentUser.name, action: textAction });
@@ -617,60 +596,37 @@
             if (currentUserKey === "Cannon") loadOwnerDashboard();
         }
 
-        function sendMessage() {
-            const msgBox = document.getElementById('msgInput');
-            const msgText = msgBox.value.trim();
-            const now = new Date().toLocaleString([], {month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'});
-            
-            if(msgText !== "") {
-                let messages = JSON.parse(localStorage.getItem('cp_messages')) || [];
-                messages.unshift({ from: currentUser.name, time: now, text: msgText });
-                localStorage.setItem('cp_messages', JSON.stringify(messages));
-                
-                document.getElementById('msgStatus').style.display = 'block';
-                msgBox.value = "";
-                setTimeout(() => { document.getElementById('msgStatus').style.display = 'none'; }, 3000);
-                if (currentUserKey === "Cannon") loadOwnerDashboard();
-            }
-        }
-
         function saveScript() {
+            playClickSound();
             const currentProject = document.getElementById('projectSelect').value;
             const content = document.getElementById('scriptArea').value;
             const now = new Date().toLocaleString([], {hour: '2-digit', minute:'2-digit'});
             
             localStorage.setItem(`cp_script_${currentProject}`, content);
-            localStorage.setItem(`cp_script_time_${currentProject}`, `Last change by ${currentUser.name} at ${now}`);
+            localStorage.setItem(`cp_script_time_${currentProject}`, `Last edit by ${currentUser.name} at ${now}`);
             
             document.getElementById('saveStatus').style.display = 'block';
-            document.getElementById('lastSavedText').innerText = `Last change by ${currentUser.name} at ${now}`;
+            document.getElementById('lastSavedText').innerText = `Last edit by ${currentUser.name} at ${now}`;
             setTimeout(() => { document.getElementById('saveStatus').style.display = 'none'; }, 3000);
         }
 
-        document.addEventListener('keydown', function(e) {
-            if ((e.metaKey || e.ctrlKey) && e.key === 's') {
-                e.preventDefault();
-                saveScript();
-            }
-        });
-
         function loadProjectScript() {
             const currentProject = document.getElementById('projectSelect').value;
-            
             const savedContent = localStorage.getItem(`cp_script_${currentProject}`);
             document.getElementById('scriptArea').value = savedContent ? savedContent : "";
             
             const savedTime = localStorage.getItem(`cp_script_time_${currentProject}`);
-            document.getElementById('lastSavedText').innerText = savedTime ? savedTime : "Last Repository Sync: Never";
+            document.getElementById('lastSavedText').innerText = savedTime ? savedTime : "Last Synced: Never";
 
             document.getElementById('likeCount').innerText = localStorage.getItem(`cp_likes_${currentProject}`) || "0";
             document.getElementById('dislikeCount').innerText = localStorage.getItem(`cp_dislikes_${currentProject}`) || "0";
 
             const savedComment = localStorage.getItem(`cp_comment_${currentProject}`);
-            document.getElementById('commentText').innerText = savedComment ? savedComment : "No notes evaluated for this project file yet.";
+            document.getElementById('commentText').innerText = savedComment ? savedComment : "No notes added to this file yet.";
         }
 
         function submitReaction(type) {
+            playClickSound();
             const currentProject = document.getElementById('projectSelect').value;
             let countKey = `cp_${type}s_${currentProject}`;
             let currentCount = parseInt(localStorage.getItem(countKey)) || 0;
@@ -680,6 +636,7 @@
         }
 
         function saveExecutiveComment() {
+            playClickSound();
             const currentProject = document.getElementById('projectSelect').value;
             const commentVal = document.getElementById('executiveCommentInput').value.trim();
             if(commentVal !== "") {
@@ -690,10 +647,11 @@
         }
 
         function sendOwnerReply() {
+            playClickSound();
             const replyText = document.getElementById('ownerReplyInput').value.trim();
             if(replyText !== "") {
                 const now = new Date().toLocaleString([], {month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'});
-                localStorage.setItem('cp_owner_reply', `[${now}] Director: "${replyText}"`);
+                localStorage.setItem('cp_owner_reply', `[${now}] Cannon: "${replyText}"`);
                 document.getElementById('ownerReplyInput').value = "";
                 loadOwnerReplies();
             }
@@ -702,30 +660,16 @@
         function loadOwnerReplies() {
             const reply = localStorage.getItem('cp_owner_reply');
             if(reply) {
-                document.getElementById('ownerRepliesBox').innerHTML = `<span style="color: var(--accent); font-weight:600; text-transform:uppercase; font-size:12px;">DIRECTIVE:</span> ${reply}`;
+                document.getElementById('ownerRepliesBox').innerHTML = `<strong>Note:</strong> ${reply}`;
             }
         }
 
         function loadOwnerDashboard() {
-            const msgContainer = document.getElementById('incomingMessagesBox');
-            let messages = JSON.parse(localStorage.getItem('cp_messages')) || [];
-            
-            if (messages.length === 0) {
-                msgContainer.innerHTML = `<p style="color: var(--text-muted); font-style: italic; font-size: 13px;">No data frames caught in buffer.</p>`;
-            } else {
-                msgContainer.innerHTML = messages.map(m => `
-                    <div class="log-item">
-                        <strong>Source: ${m.from}</strong> <span style="color: var(--text-muted); font-size:11px;">(${m.time})</span><br>
-                        <p style="margin-top:6px; color: var(--text-main); line-height:1.4;">${m.text}</p>
-                    </div>
-                `).join('');
-            }
-
             const clockContainer = document.getElementById('masterClockBox');
             let clockLogs = JSON.parse(localStorage.getItem('cp_clock_logs')) || [];
             
             if (clockLogs.length === 0) {
-                clockContainer.innerHTML = `<p style="color: var(--text-muted); font-style: italic; font-size: 13px;">No telemetry frames caught in buffer.</p>`;
+                clockContainer.innerHTML = `<p style="color: var(--text-muted); font-style: italic; font-size: 13px;">No session logs tracked yet.</p>`;
             } else {
                 clockContainer.innerHTML = clockLogs.map(l => `
                     <div class="log-item" style="border-left-color: var(--success);">
@@ -735,12 +679,8 @@
             }
         }
 
-        function clearMessages() {
-            localStorage.removeItem('cp_messages');
-            loadOwnerDashboard();
-        }
-
         function clearClockLogs() {
+            playClickSound();
             localStorage.removeItem('cp_clock_logs');
             loadOwnerDashboard();
         }
