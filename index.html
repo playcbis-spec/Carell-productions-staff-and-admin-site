@@ -68,7 +68,6 @@
             overflow-x: hidden;
         }
 
-        /* Apple Liquid Glass Background Canvas Graphic */
         body::before {
             content: "";
             position: fixed;
@@ -104,7 +103,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            display: none; /* Hidden until login */
+            display: none;
         }
 
         .nav-logo {
@@ -196,7 +195,14 @@
         }
         button:hover { opacity: 0.9; }
 
-        /* VIEWS (HOME, DRAFTS, ABOUT) */
+        button:disabled {
+            background-color: var(--border) !important;
+            color: var(--text-muted) !important;
+            cursor: not-allowed !important;
+            opacity: 0.6;
+        }
+
+        /* VIEWS */
         .view-content { padding: 30px; display: none; flex-grow: 1; }
         .view-content.active { display: block; }
         
@@ -210,6 +216,23 @@
         .log-item { background: var(--card-bg); padding: 10px; border-radius: 6px; margin-top: 8px; font-size: 14px; border: 1px solid var(--border); border-left: 3px solid var(--accent); }
         .feedback-deck { background: var(--card-bg); padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid var(--border); }
         .reaction-btn { width: auto; display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; margin-right: 10px; background: var(--card-sub); border: 1px solid var(--border); margin-top: 0; }
+
+        /* Progress Bar for Earnings Payout System */
+        .progress-bar-container {
+            width: 100%;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            height: 12px;
+            border-radius: 6px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
 
         /* Staff Directory Cards */
         .directory-card { 
@@ -242,7 +265,6 @@
             margin-top: 10px;
         }
 
-        /* Profile Layout Details */
         .owner-profile-box {
             display: flex;
             flex-direction: column;
@@ -251,7 +273,7 @@
             padding: 10px 10px;
         }
 
-        /* Interactive Bio Pop-Up Window (Modal) */
+        /* Interactive Bio Pop-Up Window */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -272,6 +294,19 @@
             padding: 25px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.6);
             position: relative;
+        }
+
+        /* Lockout notice layout banner */
+        .lockout-notice {
+            background: rgba(244, 63, 94, 0.08);
+            border: 1px dashed var(--danger);
+            color: var(--danger);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            text-align: center;
+            margin-bottom: 15px;
+            display: none;
         }
     </style>
 </head>
@@ -309,7 +344,7 @@
         </div>
 
         <!-- Credentials Mod Block -->
-        <div>
+        <div id="credentialsControlBox">
             <h4>Change Login Info</h4>
             <input type="text" id="editUsername" placeholder="Username">
             <input type="password" id="editPassword" placeholder="Password">
@@ -318,7 +353,7 @@
             <input type="text" id="editPhone" placeholder="Phone Number">
             <input type="text" id="editEmail" placeholder="Email Address">
             
-            <button onclick="updateAccountInfo()" style="padding: 10px; font-size: 13px; margin-top: 10px;">Save Profile Info</button>
+            <button id="saveProfileBtn" onclick="updateAccountInfo()" style="padding: 10px; font-size: 13px; margin-top: 10px;">Save Profile Info</button>
             <p id="settingsStatus" style="font-size: 12px; color: var(--success); margin-top: 6px; display: none;">✓ Changes saved successfully!</p>
         </div>
 
@@ -361,6 +396,11 @@
             
             <!-- VIEW 1: CLEAN HOME SCREEN GREETING -->
             <div id="homeView" class="view-content active">
+                <!-- Guest Alert lockout banner block notice -->
+                <div id="guestLockoutNotice" class="lockout-notice">
+                    🔒 You are currently logged in as a <strong>Guest</strong>. System changes and file alterations have been blocked.
+                </div>
+
                 <div class="section" style="text-align: center; padding: 50px 20px;">
                     <h2 id="welcomeText" style="font-size: 28px; font-weight: 700; margin-bottom: 6px;">Welcome</h2>
                     <p id="roleText" style="color: var(--accent); font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Title: Staff Member</p>
@@ -373,11 +413,38 @@
                     </div>
                 </div>
 
-                <div class="section">
+                <!-- DYNAMIC TIME CLOCK TERMINAL -->
+                <div id="timeclockSection" class="section">
                     <h3>Time Clock Terminal</h3>
-                    <p style="margin-bottom: 12px; font-size: 14px; color: var(--text-muted);">Status: <span id="currentStatus" class="status-badge status-out">Clocked Out</span></p>
-                    <button id="clockBtn" onclick="toggleClock()" style="background-color: var(--success); width: auto; padding: 10px 20px;">Clock In</button>
+                    <p style="margin-top: 5px; font-size: 14px; color: var(--text-muted);">
+                        Current Status: <span id="currentStatus" class="status-badge status-out">Clocked Out</span>
+                    </p>
+                    <p style="margin-top: 8px; font-size: 15px; font-weight: 500; color: var(--text-main);">
+                        ⏱️ Your Weekly Accumulated Log: <span id="weeklyAccumulator" style="color: var(--accent); font-family: monospace; font-weight: bold;">00h 00m 00s</span>
+                    </p>
+                    
+                    <button id="clockBtn" onclick="toggleClock()" style="background-color: var(--success); width: auto; padding: 10px 20px; margin-top: 12px;">Clock In</button>
                     <p style="font-size: 11px; color: var(--text-muted); margin-top: 10px;" id="timeLog">Last Record: None</p>
+                </div>
+
+                <!-- STUDIO EARNINGS & PAYOUT MATRIX -->
+                <div class="section" style="border-left: 4px solid var(--success);">
+                    <h3>💰 Studio Earnings & Payout Matrix</h3>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
+                        Profits are securely aggregated here. Once studio earnings hit the **$100.00** threshold milestone, resources are unlocked and distributed among active production teammates.
+                    </p>
+                    
+                    <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 15px; margin-top: 14px; text-align: center;">
+                        <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);">Current Saved Profit Pool</div>
+                        <div id="profitDisplay" style="font-size: 32px; font-weight: 800; color: #10b981; margin: 4px 0;">$0.00 / $100.00</div>
+                        
+                        <div class="progress-bar-container">
+                            <div id="progressBarFill" class="progress-bar-fill"></div>
+                        </div>
+                        <div id="payoutMilestoneNotice" style="font-size: 12px; margin-top: 8px; font-weight: 600; color: #a78bfa; display: none;">
+                            🎉 $100 Goal Reached! Director will now initiate employee payout distribution.
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -391,7 +458,7 @@
                     </select>
                     <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;" id="lastSavedText">Last Synced: Never</p>
                     <textarea id="scriptArea" rows="12" style="font-size: 14px; line-height: 1.5;" placeholder="Type ideas, lyrics, or scene dialogue blocks here. Hit save to push files into device sync memory."></textarea>
-                    <button onclick="saveScript()" style="background-color: var(--accent);">Save Script File</button>
+                    <button id="saveScriptBtn" onclick="saveScript()" style="background-color: var(--accent);">Save Script File</button>
                     <p id="saveStatus" style="font-size: 12px; color: var(--success); margin-top: 8px; display: none;">✓ Changes saved to system profile configuration.</p>
 
                     <div class="feedback-deck">
@@ -410,6 +477,16 @@
                 <div id="managementSection" class="section management-only">
                     <h3 style="color: #a78bfa; font-size: 16px; border-bottom: 1px solid #4c1d95; padding-bottom: 8px; margin-bottom: 15px;">Director Panel (Cannon Only)</h3>
                     
+                    <!-- MASTER PROFIT CONTROLLER PANEL -->
+                    <div style="margin-bottom: 20px; background: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
+                        <h4 style="margin:0 0 6px 0; color:var(--text-main); font-size: 13px;">Adjust Total Studio Saved Profit ($)</h4>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">Enter current overall profits here to push values onto staff screens.</p>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="number" id="ownerProfitInput" placeholder="Ex: 50.00" style="margin:0; max-width: 150px;">
+                            <button onclick="adjustStudioProfit()" style="background-color: var(--success); width: auto; padding: 0 20px; margin:0;">Update Profit Pool</button>
+                        </div>
+                    </div>
+
                     <div style="margin-bottom: 20px; background: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
                         <h4 style="margin:0 0 6px 0; color:var(--text-main);">Pin Note to Home Screen Display</h4>
                         <textarea id="ownerReplyInput" rows="2" placeholder="Write a response message or tracking note..."></textarea>
@@ -450,7 +527,6 @@
     </div>
 
     <script>
-        // Clean Professional Tap UI Audio Wave Sound Generator
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playClickSound() {
             try {
@@ -467,32 +543,49 @@
             } catch(e) {}
         }
 
-        // Initialize Accounts Matrix with editable Bio data blocks
-        if (!localStorage.getItem('cp_accounts')) {
-            const defaultAccounts = {
-                "AA": { 
-                    name: "Alia", 
-                    pass: "Alia7778881028", 
-                    role: "Assistant Executive Producer", 
-                    phone: "777-888-1028", 
-                    email: "alia@carellproductions.com",
-                    bio: "Profile biography currently under construction. Check back soon to read about my background, roots, and upcoming work with Carell Productions!"
-                },
-                "Cannon": { 
-                    name: "Cannon", 
-                    pass: "CB Canon 777-888-1127", 
-                    role: "Company Owner & Director", 
-                    phone: "777-888-1127", 
-                    email: "cannon@carellproductions.com",
-                    bio: "From back where I can remember, my mom was always singing around me and doing artsy, musical things. Today, I am a multi-talented arts and architecture 14-year-old upcoming professional."
-                }
-            };
-            localStorage.setItem('cp_accounts', JSON.stringify(defaultAccounts));
+        function getAccounts() {
+            let accounts = localStorage.getItem('cp_accounts');
+            if (!accounts) {
+                const defaultAccounts = {
+                    "AA": { 
+                        name: "Alia", 
+                        pass: "Alia7778881028", 
+                        role: "Assistant Executive Producer", 
+                        phone: "777-888-1028", 
+                        email: "alia@carellproductions.com",
+                        bio: "Profile biography currently under construction...",
+                        isGuest: false
+                    },
+                    "Cannon": { 
+                        name: "Cannon", 
+                        pass: "CB Canon 777-888-1127", 
+                        role: "Company Owner & Director", 
+                        phone: "777-888-1127", 
+                        email: "cannon@carellproductions.com",
+                        bio: "From back where I can remember, my mom was always singing around me and doing artsy, musical things.",
+                        isGuest: false
+                    },
+                    "Audrii": {
+                        name: "Audrii",
+                        pass: "1234",
+                        role: "Official Corporate Guest",
+                        phone: "Hidden Profile",
+                        email: "guest@carellproductions.com",
+                        bio: "Logged in under secure Spectator mode.",
+                        isGuest: true
+                    }
+                };
+                localStorage.setItem('cp_accounts', JSON.stringify(defaultAccounts));
+                return defaultAccounts;
+            }
+            return JSON.parse(accounts);
         }
 
         let currentUser = null;
         let currentUserKey = null;
         let isClockedIn = false;
+        let liveTimerInterval = null;
+        let clockSessionStartTime = null;
 
         window.onload = function() {
             const activeTheme = localStorage.getItem('cp_system_theme') || 'charcoal';
@@ -500,11 +593,12 @@
             document.getElementById('themeSelect').value = activeTheme;
 
             const savedUserKey = localStorage.getItem('cp_active_session_user');
-            const accounts = JSON.parse(localStorage.getItem('cp_accounts'));
+            const accounts = getAccounts();
             if (savedUserKey && accounts[savedUserKey]) {
                 setupDashboard(savedUserKey);
             }
             renderDirectory();
+            refreshProfitDisplay();
         }
 
         function toggleSettings() {
@@ -514,12 +608,12 @@
 
         function openBioModal(userKey) {
             playClickSound();
-            const accounts = JSON.parse(localStorage.getItem('cp_accounts'));
+            const accounts = getAccounts();
             const person = accounts[userKey];
             if (person) {
                 document.getElementById('modalName').innerText = person.name;
                 document.getElementById('modalRole').innerText = person.role;
-                document.getElementById('modalBioText').innerText = person.bio || "No profile bio has been written yet for this staff member.";
+                document.getElementById('modalBioText').innerText = person.bio || "No profile bio written yet.";
                 document.getElementById('bioModal').style.display = 'flex';
             }
         }
@@ -536,6 +630,7 @@
             if(viewName === 'home') {
                 document.getElementById('homeView').classList.add('active');
                 document.getElementById('homeTabBtn').classList.add('active');
+                refreshProfitDisplay();
             } else if(viewName === 'drafts') {
                 document.getElementById('draftsView').classList.add('active');
                 document.getElementById('draftsTabBtn').classList.add('active');
@@ -551,7 +646,7 @@
             const userIn = document.getElementById('username').value.trim();
             const passIn = document.getElementById('password').value;
             const errorElement = document.getElementById('errorMsg');
-            const accounts = JSON.parse(localStorage.getItem('cp_accounts'));
+            const accounts = getAccounts();
 
             if (accounts[userIn] && accounts[userIn].pass === passIn) {
                 localStorage.setItem('cp_active_session_user', userIn);
@@ -564,7 +659,7 @@
 
         function setupDashboard(userKey) {
             currentUserKey = userKey;
-            const accounts = JSON.parse(localStorage.getItem('cp_accounts'));
+            const accounts = getAccounts();
             currentUser = accounts[userKey];
             
             document.getElementById('loginScreen').style.display = 'none';
@@ -580,20 +675,140 @@
             document.getElementById('editEmail').value = currentUser.email || "";
 
             loadOwnerReplies();
+            updateAccumulatorDisplay();
             
-            if (userKey === "Cannon") {
-                document.getElementById('managementSection').style.display = 'block';
-                loadOwnerDashboard();
-            } else {
+            if (currentUser.isGuest) {
+                document.getElementById('guestLockoutNotice').style.display = 'block';
+                document.getElementById('timeclockSection').style.display = 'none';
                 document.getElementById('managementSection').style.display = 'none';
+                document.getElementById('saveScriptBtn').disabled = true;
+                document.getElementById('scriptArea').placeholder = "🔒 READ ONLY MODE.";
+                document.getElementById('credentialsControlBox').style.display = 'none';
+            } else {
+                document.getElementById('guestLockoutNotice').style.display = 'none';
+                document.getElementById('timeclockSection').style.display = 'block';
+                document.getElementById('saveScriptBtn').disabled = false;
+                document.getElementById('credentialsControlBox').style.display = 'block';
+
+                if (userKey === "Cannon") {
+                    document.getElementById('managementSection').style.display = 'block';
+                    document.getElementById('ownerProfitInput').value = localStorage.getItem('cp_studio_profit') || "0.00";
+                    loadOwnerDashboard();
+                } else {
+                    document.getElementById('managementSection').style.display = 'none';
+                }
             }
             
             renderDirectory();
         }
 
+        // ACCUMULATED CLOCK MATH TRACKER ENGINE
+        function getWeeklySeconds() {
+            let weeklyData = JSON.parse(localStorage.getItem('cp_weekly_seconds')) || {};
+            return weeklyData[currentUserKey] || 0;
+        }
+
+        function saveWeeklySeconds(secs) {
+            let weeklyData = JSON.parse(localStorage.getItem('cp_weekly_seconds')) || {};
+            weeklyData[currentUserKey] = secs;
+            localStorage.setItem('cp_weekly_seconds', JSON.stringify(weeklyData));
+        }
+
+        function formatTimeDisplay(totalSeconds) {
+            let hrs = Math.floor(totalSeconds / 3600);
+            let mins = Math.floor((totalSeconds % 3600) / 60);
+            let secs = totalSeconds % 60;
+            return `${hrs.toString().padStart(2, '0')}h ${mins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`;
+        }
+
+        function updateAccumulatorDisplay() {
+            let currentStored = getWeeklySeconds();
+            document.getElementById('weeklyAccumulator').innerText = formatTimeDisplay(currentStored);
+        }
+
+        function toggleClock() {
+            playClickSound();
+            if (currentUser && currentUser.isGuest) return;
+
+            const statusBadge = document.getElementById('currentStatus');
+            const btn = document.getElementById('clockBtn');
+            const log = document.getElementById('timeLog');
+            const now = new Date();
+            const nowStr = now.toLocaleString([], {month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'});
+
+            let textAction = "";
+            if (!isClockedIn) {
+                // STARTING LIVE TIMER SESSION
+                isClockedIn = true;
+                clockSessionStartTime = Date.now();
+                
+                statusBadge.innerText = "Clocked In";
+                statusBadge.className = "status-badge status-in";
+                btn.innerText = "Clock Out";
+                btn.style.backgroundColor = "var(--danger)";
+                textAction = `Clocked In on ${nowStr}`;
+                
+                // Fire up live screen tick interval counters
+                let initialStoredSecs = getWeeklySeconds();
+                liveTimerInterval = setInterval(() => {
+                    let elapsedSecs = Math.floor((Date.now() - clockSessionStartTime) / 1000);
+                    document.getElementById('weeklyAccumulator').innerText = formatTimeDisplay(initialStoredSecs + elapsedSecs);
+                }, 1000);
+
+            } else {
+                // ENDING LIVE TIMER SESSION
+                isClockedIn = false;
+                clearInterval(liveTimerInterval);
+                
+                let sessionElapsedSeconds = Math.floor((Date.now() - clockSessionStartTime) / 1000);
+                let newTotalSeconds = getWeeklySeconds() + sessionElapsedSeconds;
+                saveWeeklySeconds(newTotalSeconds);
+                updateAccumulatorDisplay();
+                
+                statusBadge.innerText = "Clocked Out";
+                statusBadge.className = "status-badge status-out";
+                btn.innerText = "Clock In";
+                btn.style.backgroundColor = "var(--success)";
+                textAction = `Clocked Out on ${nowStr} (Session: +${Math.floor(sessionElapsedSeconds/60)}m)`;
+            }
+            
+            log.innerText = `Last Action: ${textAction}`;
+
+            let clockLogs = JSON.parse(localStorage.getItem('cp_clock_logs')) || [];
+            clockLogs.unshift({ user: currentUser.name, action: textAction });
+            localStorage.setItem('cp_clock_logs', JSON.stringify(clockLogs));
+            if (currentUserKey === "Cannon") loadOwnerDashboard();
+        }
+
+        // REFRESH STUDIO PROFIT ENGINE DISPLAYS
+        function refreshProfitDisplay() {
+            let currentProfit = parseFloat(localStorage.getItem('cp_studio_profit')) || 0.00;
+            document.getElementById('profitDisplay').innerText = `$${currentProfit.toFixed(2)} / $100.00`;
+            
+            // Calculate progress ceiling bar matching the $100 payout goal parameters
+            let percentage = Math.min((currentProfit / 100) * 100, 100);
+            document.getElementById('progressBarFill').style.width = `${percentage}%`;
+
+            if (currentProfit >= 100) {
+                document.getElementById('payoutMilestoneNotice').style.display = 'block';
+            } else {
+                document.getElementById('payoutMilestoneNotice').style.display = 'none';
+            }
+        }
+
+        function adjustStudioProfit() {
+            playClickSound();
+            if (currentUserKey !== "Cannon") return;
+            let val = parseFloat(document.getElementById('ownerProfitInput').value) || 0.00;
+            localStorage.setItem('cp_studio_profit', val.toFixed(2));
+            refreshProfitDisplay();
+        }
+
+        // Standard App Operations
         function updateAccountInfo() {
             playClickSound();
-            const accounts = JSON.parse(localStorage.getItem('cp_accounts'));
+            if (currentUser && currentUser.isGuest) return;
+            const accounts = getAccounts();
             const newUsername = document.getElementById('editUsername').value.trim();
             const newPassword = document.getElementById('editPassword').value;
             const newPhone = document.getElementById('editPhone').value.trim();
@@ -617,36 +832,24 @@
 
                 localStorage.setItem('cp_accounts', JSON.stringify(accounts));
                 setupDashboard(currentUserKey);
-
                 statusLabel.style.display = 'block';
                 setTimeout(() => { statusLabel.style.display = 'none'; }, 3000);
             }
         }
 
         function renderDirectory() {
-            const accounts = JSON.parse(localStorage.getItem('cp_accounts')) || {};
+            const accounts = getAccounts();
             const container = document.getElementById('directoryContainer');
             container.innerHTML = "";
-            
             for (let key in accounts) {
                 const person = accounts[key];
                 container.innerHTML += `
                     <div class="directory-card" onclick="openBioModal('${key}')">
-                        <strong>${person.name}</strong> (${key})<br>
+                        <strong>${person.name}</strong><br>
                         <span style="color:var(--text-muted); font-size:12px;">${person.role}</span>
-                        <div style="margin-top: 6px; font-size:11px; color: var(--accent); font-weight: 500;">
-                            Tap to view bio →
-                        </div>
                     </div>
                 `;
             }
-
-            container.innerHTML += `
-                <div class="construction-banner">
-                    🔨 <strong>Roster Update in Progress</strong><br>
-                    Additional staff contacts will appear here soon.
-                </div>
-            `;
         }
 
         function changeSystemTheme() {
@@ -658,6 +861,7 @@
 
         function handleLogout() {
             playClickSound();
+            if (isClockedIn) toggleClock(); 
             localStorage.removeItem('cp_active_session_user');
             currentUser = null;
             currentUserKey = null;
@@ -665,52 +869,17 @@
             document.getElementById('topNav').style.display = 'none';
             document.getElementById('dashboardScreen').style.display = 'none';
             document.getElementById('settingsDrawer').classList.remove('open');
-            document.getElementById('username').value = "";
-            document.getElementById('password').value = "";
             switchView('home');
-        }
-
-        function toggleClock() {
-            playClickSound();
-            const statusBadge = document.getElementById('currentStatus');
-            const btn = document.getElementById('clockBtn');
-            const log = document.getElementById('timeLog');
-            const now = new Date().toLocaleString([], {month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'});
-
-            let textAction = "";
-            if (!isClockedIn) {
-                isClockedIn = true;
-                statusBadge.innerText = "Clocked In";
-                statusBadge.className = "status-badge status-in";
-                btn.innerText = "Clock Out";
-                btn.style.backgroundColor = "var(--danger)";
-                textAction = `Clocked In on ${now}`;
-            } else {
-                isClockedIn = false;
-                statusBadge.innerText = "Clocked Out";
-                statusBadge.className = "status-badge status-out";
-                btn.innerText = "Clock In";
-                btn.style.backgroundColor = "var(--success)";
-                textAction = `Clocked Out on ${now}`;
-            }
-            
-            log.innerText = `Last Action: ${textAction}`;
-
-            let clockLogs = JSON.parse(localStorage.getItem('cp_clock_logs')) || [];
-            clockLogs.unshift({ user: currentUser.name, action: textAction });
-            localStorage.setItem('cp_clock_logs', JSON.stringify(clockLogs));
-            if (currentUserKey === "Cannon") loadOwnerDashboard();
         }
 
         function saveScript() {
             playClickSound();
+            if (currentUser && currentUser.isGuest) return;
             const currentProject = document.getElementById('projectSelect').value;
             const content = document.getElementById('scriptArea').value;
             const now = new Date().toLocaleString([], {hour: '2-digit', minute:'2-digit'});
-            
             localStorage.setItem(`cp_script_${currentProject}`, content);
             localStorage.setItem(`cp_script_time_${currentProject}`, `Last edit by ${currentUser.name} at ${now}`);
-            
             document.getElementById('saveStatus').style.display = 'block';
             document.getElementById('lastSavedText').innerText = `Last edit by ${currentUser.name} at ${now}`;
             setTimeout(() => { document.getElementById('saveStatus').style.display = 'none'; }, 3000);
@@ -720,15 +889,12 @@
             const currentProject = document.getElementById('projectSelect').value;
             const savedContent = localStorage.getItem(`cp_script_${currentProject}`);
             document.getElementById('scriptArea').value = savedContent ? savedContent : "";
-            
             const savedTime = localStorage.getItem(`cp_script_time_${currentProject}`);
             document.getElementById('lastSavedText').innerText = savedTime ? savedTime : "Last Synced: Never";
-
             document.getElementById('likeCount').innerText = localStorage.getItem(`cp_likes_${currentProject}`) || "0";
             document.getElementById('dislikeCount').innerText = localStorage.getItem(`cp_dislikes_${currentProject}`) || "0";
-
             const savedComment = localStorage.getItem(`cp_comment_${currentProject}`);
-            document.getElementById('commentText').innerText = savedComment ? savedComment : "No notes added to this file yet.";
+            document.getElementById('commentText').innerText = savedComment ? savedComment : "No notes added yet.";
         }
 
         function submitReaction(type) {
@@ -743,6 +909,7 @@
 
         function saveExecutiveComment() {
             playClickSound();
+            if (currentUserKey !== "Cannon") return;
             const currentProject = document.getElementById('projectSelect').value;
             const commentVal = document.getElementById('executiveCommentInput').value.trim();
             if(commentVal !== "") {
@@ -754,6 +921,7 @@
 
         function sendOwnerReply() {
             playClickSound();
+            if (currentUserKey !== "Cannon") return;
             const replyText = document.getElementById('ownerReplyInput').value.trim();
             if(replyText !== "") {
                 const now = new Date().toLocaleString([], {month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'});
@@ -765,15 +933,12 @@
 
         function loadOwnerReplies() {
             const reply = localStorage.getItem('cp_owner_reply');
-            if(reply) {
-                document.getElementById('ownerRepliesBox').innerHTML = `<strong>Note:</strong> ${reply}`;
-            }
+            if(reply) document.getElementById('ownerRepliesBox').innerHTML = `<strong>Note:</strong> ${reply}`;
         }
 
         function loadOwnerDashboard() {
             const clockContainer = document.getElementById('masterClockBox');
             let clockLogs = JSON.parse(localStorage.getItem('cp_clock_logs')) || [];
-            
             if (clockLogs.length === 0) {
                 clockContainer.innerHTML = `<p style="color: var(--text-muted); font-style: italic; font-size: 13px;">No session logs tracked yet.</p>`;
             } else {
@@ -785,8 +950,9 @@
             }
         }
 
-        function clearClockLogs() {
+        function removeClockLogs() {
             playClickSound();
+            if (currentUserKey !== "Cannon") return;
             localStorage.removeItem('cp_clock_logs');
             loadOwnerDashboard();
         }
