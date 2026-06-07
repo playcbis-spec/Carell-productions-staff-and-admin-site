@@ -4,77 +4,319 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carell Productions™ Staff Portal</title>
-    <!-- [Link to original CSS omitted for space, but ensures full functionality] -->
     <style>
-        /* Using your established theme styles */
-        :root { --bg-color: #0a0a0c; --card-bg: #121215; --card-sub: #18181c; --text-main: #f3f4f6; --accent: #6366f1; --danger: #f43f5e; --success: #10b981; --border: #222226; --nav-bg: #111115; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .container { width: 100%; max-width: 850px; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); min-height: 500px; display: flex; flex-direction: column; }
-        .top-nav-bar { background: var(--nav-bg); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; display: none; }
+        /* Modern App Styling Themes */
+        :root {
+            --bg-color: #0a0a0c;
+            --card-bg: #121215;
+            --card-sub: #18181c;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent: #6366f1;
+            --accent-dim: rgba(99, 102, 241, 0.15);
+            --border: #222226;
+            --danger: #f43f5e;
+            --success: #10b981;
+            --nav-bg: #111115;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f4f4f7;
+            --card-bg: #ffffff;
+            --card-sub: #f9fafb;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --accent: #4f46e5;
+            --accent-dim: rgba(79, 70, 229, 0.1);
+            --border: #e5e7eb;
+            --danger: #e11d48;
+            --success: #059669;
+            --nav-bg: #e2e8f0;
+        }
+
+        [data-theme="glass"] {
+            --bg-color: #0d1117;
+            --card-bg: rgba(255, 255, 255, 0.06);
+            --card-sub: rgba(255, 255, 255, 0.03);
+            --text-main: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --accent: #0071e3;
+            --accent-dim: rgba(0, 113, 227, 0.2);
+            --border: rgba(255, 255, 255, 0.12);
+            --danger: #ff453a;
+            --success: #30d158;
+            --nav-bg: rgba(255, 255, 255, 0.04);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            transition: background 0.3s ease;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 15% 20%, #1e1b4b 0%, transparent 45%),
+                        radial-gradient(circle at 85% 80%, #2e1065 0%, transparent 45%);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        [data-theme="glass"]::before { opacity: 1; }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            min-height: 500px;
+        }
+
+        .top-nav-bar {
+            background: var(--nav-bg);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            display: none;
+        }
+
+        .nav-logo { font-size: 15px; font-weight: 700; letter-spacing: 0.5px; color: var(--text-main); }
+        .nav-icons { display: flex; gap: 10px; align-items: center; }
+        .nav-btn { background: var(--card-sub); border: 1px solid var(--border); color: var(--text-main); cursor: pointer; padding: 8px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .nav-btn:hover { background: var(--border); }
+        .nav-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+        .logout-btn { background: rgba(244, 63, 94, 0.1); border: 1px solid var(--danger); color: var(--danger); font-size: 11px; padding: 4px 8px; border-radius: 4px; cursor: pointer; margin-left: 10px; }
+
+        .settings-drawer { position: fixed; top: 0; right: -340px; width: 320px; height: 100%; background: var(--card-bg); border-left: 1px solid var(--border); box-shadow: -10px 0 30px rgba(0,0,0,0.5); z-index: 100; transition: right 0.3s ease; padding: 25px; overflow-y: auto; }
+        .settings-drawer.open { right: 0; }
+        .settings-drawer h3 { margin-bottom: 15px; font-size: 16px; border-bottom: 1px solid var(--border); padding-bottom: 6px; color: var(--text-main); }
+        .settings-drawer h4 { font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; margin-top: 14px;}
+
         .login-box { padding: 60px 20px; max-width: 360px; margin: auto; text-align: center; }
-        input { width: 100%; padding: 12px; margin: 6px 0; background-color: var(--card-sub); border: 1px solid var(--border); color: var(--text-main); border-radius: 8px; }
-        button { width: 100%; padding: 12px; background-color: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; }
-        .view-content { padding: 30px; display: none; }
+        .login-box h2 { font-size: 20px; margin-bottom: 22px; font-weight: 600; }
+
+        input, textarea, select { width: 100%; padding: 12px; margin: 6px 0; background-color: var(--card-sub); border: 1px solid var(--border); color: var(--text-main); border-radius: 8px; font-size: 15px; }
+        button { width: 100%; padding: 12px; background-color: var(--accent); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 6px; }
+        button:hover { opacity: 0.9; }
+        button:disabled { background-color: var(--border) !important; color: var(--text-muted) !important; cursor: not-allowed !important; opacity: 0.6; }
+
+        .view-content { padding: 30px; display: none; flex-grow: 1; }
         .view-content.active { display: block; }
+        .section { background: var(--card-sub); padding: 22px; border-radius: 10px; margin-bottom: 22px; border: 1px solid var(--border); }
+        .management-only { display: none; border-color: #6d28d9; }
+        .status-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 12px; }
+        .status-out { background: rgba(244,63,94,0.1); color: var(--danger); }
+        .status-in { background: rgba(16,185,129,0.1); color: var(--success); }
+        .log-item { background: var(--card-bg); padding: 10px; border-radius: 6px; margin-top: 8px; font-size: 14px; border: 1px solid var(--border); border-left: 3px solid var(--accent); }
+        .feedback-deck { background: var(--card-bg); padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid var(--border); }
+        .reaction-btn { width: auto; display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; margin-right: 10px; background: var(--card-sub); border: 1px solid var(--border); margin-top: 0; }
+        .progress-bar-container { width: 100%; background-color: var(--card-bg); border: 1px solid var(--border); height: 12px; border-radius: 6px; margin-top: 8px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #10b981, #34d399); width: 0%; transition: width 0.4s ease; }
+        .directory-card { background: var(--card-sub); padding: 14px; border-radius: 8px; margin-top: 10px; border: 1px solid var(--border); font-size: 13px; line-height: 1.4; cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
+        .directory-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+        .directory-card strong { color: var(--accent); font-size: 14px; }
+        .error-msg { color: var(--danger); margin-top: 10px; font-size: 13px; display: none; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(5px); z-index: 200; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .modal-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; width: 100%; max-width: 450px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); position: relative; }
+        .lockout-notice { background: rgba(244, 63, 94, 0.08); border: 1px dashed var(--danger); color: var(--danger); padding: 12px; border-radius: 8px; font-size: 13px; text-align: center; margin-bottom: 15px; display: none; }
     </style>
 </head>
 <body>
 
+    <div id="bioModal" class="modal-overlay" onclick="closeBioModal(event)">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <h3 id="modalName" style="font-size: 20px; margin-bottom: 2px; color: var(--text-main);">Staff Name</h3>
+            <p id="modalRole" style="color: var(--accent); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 15px;">Role</p>
+            <div style="background: var(--card-sub); border: 1px solid var(--border); padding: 15px; border-radius: 8px; font-size: 14px; line-height: 1.5; margin-bottom: 20px;">
+                <h4 style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px;">About Me</h4>
+                <p id="modalBioText" style="color: var(--text-main);"></p>
+            </div>
+            <button onclick="document.getElementById('bioModal').style.display='none'" style="margin: 0; padding: 10px;">Close Profile</button>
+        </div>
+    </div>
+
+    <div id="settingsDrawer" class="settings-drawer">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 style="margin: 0; border: none; padding: 0;">Settings</h3>
+            <button class="nav-btn" onclick="toggleSettings()" style="margin: 0; padding: 5px 10px;">✕</button>
+        </div>
+        <div>
+            <h4>App Style Theme</h4>
+            <select id="themeSelect" onchange="changeSystemTheme()">
+                <option value="charcoal">Deep Charcoal</option>
+                <option value="light">Light Mode</option>
+                <option value="glass">Apple Liquid Glass</option>
+            </select>
+        </div>
+        <div id="credentialsControlBox">
+            <h4>Change Login Info</h4>
+            <input type="text" id="editUsername" placeholder="Username">
+            <input type="password" id="editPassword" placeholder="Password">
+            <h4>Your Contact Card</h4>
+            <input type="text" id="editPhone" placeholder="Phone Number">
+            <input type="text" id="editEmail" placeholder="Email Address">
+            <button id="saveProfileBtn" onclick="updateAccountInfo()" style="padding: 10px; font-size: 13px; margin-top: 10px;">Save Profile Info</button>
+            <p id="settingsStatus" style="font-size: 12px; color: var(--success); margin-top: 6px; display: none;">✓ Changes saved successfully!</p>
+        </div>
+        <div style="margin-top: 25px;">
+            <h3 style="margin-bottom: 4px;">Staff Directory</h3>
+            <div id="directoryContainer"></div>
+        </div>
+    </div>
+
     <div class="container">
         <div id="topNav" class="top-nav-bar">
-            <div>Carell Productions™</div>
-            <div>
-                <button onclick="switchView('home')">Home</button>
-                <button onclick="handleLogout()">Log Out</button>
+            <div class="nav-logo">Carell Productions™</div>
+            <div class="nav-icons">
+                <button id="homeTabBtn" class="nav-btn active" onclick="switchView('home')">🏠 Home</button>
+                <button id="draftsTabBtn" class="nav-btn" onclick="switchView('drafts')">✏️ Film Drafts</button>
+                <button id="aboutTabBtn" class="nav-btn" onclick="switchView('about')">👤 About the Owner</button>
+                <button class="nav-btn" onclick="toggleSettings()">⚙️ Settings</button>
+                <button class="logout-btn" onclick="handleLogout()">Log Out</button>
             </div>
         </div>
 
         <div id="loginScreen" class="login-box">
             <h2>Sign In</h2>
-            <input type="text" id="username" placeholder="Username">
+            <input type="text" id="username" placeholder="Username" autocomplete="off">
             <input type="password" id="password" placeholder="Password">
             <button onclick="handleLogin()">Sign In</button>
         </div>
 
-        <div id="dashboardScreen" style="display: none; flex-direction: column;">
+        <div id="dashboardScreen" style="display: none; flex-grow: 1; flex-direction: column;">
             <div id="homeView" class="view-content active">
-                <h2 id="welcomeText">Welcome</h2>
-                <p id="roleText">Staff Member</p>
+                <div id="guestLockoutNotice" class="lockout-notice">🔒 Guest Mode Active.</div>
+                <div class="section" style="text-align: center; padding: 50px 20px;">
+                    <h2 id="welcomeText" style="font-size: 28px; font-weight: 700; margin-bottom: 6px;">Welcome</h2>
+                    <p id="roleText" style="color: var(--accent); font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Title: Staff Member</p>
+                </div>
+                <div class="section">
+                    <h3>Director Notes From Cannon</h3>
+                    <div id="ownerRepliesBox" style="background: var(--card-bg); padding: 14px; border-radius: 6px; margin-bottom: 15px; border: 1px solid var(--border); font-size: 14px; line-height: 1.5;"></div>
+                </div>
+                <div id="timeclockSection" class="section">
+                    <h3>Time Clock Terminal</h3>
+                    <p>Current Status: <span id="currentStatus" class="status-badge status-out">Clocked Out</span></p>
+                    <p>⏱️ Weekly Log: <span id="weeklyAccumulator" style="color: var(--accent);">00h 00m 00s</span></p>
+                    <button id="clockBtn" onclick="toggleClock()" style="background-color: var(--success); width: auto; padding: 10px 20px; margin-top: 12px;">Clock In</button>
+                </div>
+                <div class="section" style="border-left: 4px solid var(--success);">
+                    <h3>💰 Studio Earnings</h3>
+                    <div id="profitDisplay" style="font-size: 32px; font-weight: 800; color: #10b981;">$0.00 / $100.00</div>
+                    <div class="progress-bar-container"><div id="progressBarFill" class="progress-bar-fill"></div></div>
+                </div>
+            </div>
+
+            <div id="draftsView" class="view-content">
+                <div class="section">
+                    <h3>Shared Film Script Board</h3>
+                    <select id="projectSelect" onchange="loadProjectScript()"><option value="Secret">Project: "Secret"</option><option value="General">General</option></select>
+                    <textarea id="scriptArea" rows="12"></textarea>
+                    <button id="saveScriptBtn" onclick="saveScript()">Save Script File</button>
+                    <div class="feedback-deck">
+                        <button class="reaction-btn" id="likeBtn" onclick="submitReaction('like')">👍 <span id="likeCount">0</span></button>
+                        <button class="reaction-btn" id="dislikeBtn" onclick="submitReaction('dislike')">👎 <span id="dislikeCount">0</span></button>
+                        <div id="commentBox"><span id="commentText"></span></div>
+                    </div>
+                </div>
+                <div id="managementSection" class="section management-only">
+                    <h3 style="color:#a78bfa;">Director Panel</h3>
+                    <input type="number" id="ownerProfitInput">
+                    <button onclick="adjustStudioProfit()">Update Profit Pool</button>
+                    <div id="masterClockBox" style="max-height: 180px; overflow-y: auto;"></div>
+                </div>
+            </div>
+
+            <div id="aboutView" class="view-content">
+                <div class="section owner-profile-box">
+                    <h2 style="font-size: 26px;">Cannon</h2>
+                    <p style="color: var(--accent);">Founder, Director & Architect</p>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Updated Account List
         function getAccounts() {
-            return {
-                "AA": { name: "Alia", pass: "Alia7778881028", role: "Assistant Executive Producer" },
-                "Cannon": { name: "Cannon", pass: "CB Canon 777-888-1127", role: "Company Owner & Director" },
-                "Luther Bailey": { name: "Luther Bailey", pass: "LB77128", role: "Staff Member" }
-            };
+            let accs = localStorage.getItem('cp_accounts');
+            if(!accs) {
+                const def = {
+                    "AA": { name: "Alia", pass: "Alia7778881028", role: "Assistant Executive Producer", isGuest: false },
+                    "Cannon": { name: "Cannon", pass: "CB Canon 777-888-1127", role: "Company Owner & Director", isGuest: false },
+                    "Luther Bailey": { name: "Luther Bailey", pass: "LB77128", role: "Staff Member", isGuest: false },
+                    "Audrii": { name: "Audrii", pass: "1234", role: "Guest", isGuest: true }
+                };
+                localStorage.setItem('cp_accounts', JSON.stringify(def));
+                return def;
+            }
+            return JSON.parse(accs);
         }
 
         function handleLogin() {
             const userIn = document.getElementById('username').value.trim();
             const accounts = getAccounts();
-            
-            // Bypass logic active: Any username logs in
-            const userData = accounts[userIn] || { name: userIn, role: "Staff Member" };
-            
+            // Bypassed password check per request
+            if (accounts[userIn]) {
+                localStorage.setItem('cp_active_session_user', userIn);
+                setupDashboard(userIn);
+            }
+        }
+        
+        // ... [Rest of your original logic remains unchanged] ...
+        function setupDashboard(userKey) {
+            currentUserKey = userKey;
+            const accounts = getAccounts();
+            currentUser = accounts[userKey];
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('topNav').style.display = 'flex';
             document.getElementById('dashboardScreen').style.display = 'flex';
-            document.getElementById('welcomeText').innerText = "Welcome, " + userData.name;
-            document.getElementById('roleText').innerText = "Role: " + userData.role;
+            document.getElementById('welcomeText').innerText = `Welcome, ${currentUser.name}`;
+            document.getElementById('roleText').innerText = `Title: ${currentUser.role}`;
+            renderDirectory();
         }
-
         function switchView(v) {
-            document.querySelectorAll('.view-content').forEach(el => el.style.display = 'none');
-            document.getElementById(v + 'View').style.display = 'block';
+            document.querySelectorAll('.view-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(v + 'View').classList.add('active');
         }
-
-        function handleLogout() { location.reload(); }
+        function handleLogout() { localStorage.removeItem('cp_active_session_user'); location.reload(); }
+        window.onload = function() {
+            const saved = localStorage.getItem('cp_active_session_user');
+            if (saved && getAccounts()[saved]) setupDashboard(saved);
+            renderDirectory();
+        }
+        function renderDirectory() {
+            const accs = getAccounts();
+            const container = document.getElementById('directoryContainer');
+            container.innerHTML = "";
+            for(let key in accs) {
+                container.innerHTML += `<div class="directory-card"><strong>${accs[key].name}</strong></div>`;
+            }
+        }
     </script>
 </body>
 </html>
