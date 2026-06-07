@@ -3,78 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carell Productions™ | Official Showcase</title>
+    <title>Carell Productions™ | Staff Portal</title>
     <style>
         :root {
             --bg: #09090b;
             --surface: #141419;
-            --surface-card: #1d1d24;
             --accent: #6366f1;
-            --accent-glow: rgba(99, 102, 241, 0.2);
             --text-main: #f4f4f5;
             --text-muted: #a1a1aa;
             --border: #2e2e38;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-
-        body { background-color: var(--bg); color: var(--text-main); overflow-x: hidden; position: relative; padding-bottom: 60px; }
-
-        /* CINEMATIC INTRO */
-        .cinema-intro-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #050507; z-index: 9999;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            opacity: 1; transition: opacity 0.8s, filter 0.8s, visibility 0.8s;
-        }
-        .cinema-intro-overlay.fade-away { opacity: 0; filter: blur(20px) brightness(1.5); visibility: hidden; pointer-events: none; }
+        body { background-color: var(--bg); color: var(--text-main); font-family: sans-serif; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: var(--surface); padding: 30px; border-radius: 16px; border: 1px solid var(--border); }
         
-        .intro-matrix-box { display: flex; gap: 15px; opacity: 0; animation: introReveal 0.6s forwards 0.2s; }
-        .intro-emoji { font-size: 42px; animation: emojiPulse 2s infinite ease-in-out; }
-        .intro-brand { margin-top: 25px; font-size: 18px; font-weight: 700; letter-spacing: 2px; color: #ffffff; text-transform: uppercase; opacity: 0; animation: introReveal 0.6s forwards 0.8s; }
+        /* Time Clock Styles */
+        .clock-box { text-align: center; margin-bottom: 30px; }
+        .timer-display { font-size: 48px; font-weight: 800; margin-bottom: 20px; font-family: monospace; }
+        
+        button { 
+            background: var(--accent); color: white; border: none; padding: 12px 24px; 
+            border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s;
+        }
+        button:hover { opacity: 0.9; transform: scale(1.02); }
 
-        @keyframes introReveal { to { opacity: 1; transform: scale(1); } }
-        @keyframes emojiPulse { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-8px) scale(1.08); } }
-
-        /* MAIN SITE STYLING */
-        .bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 50%); }
-        .public-nav { background: rgba(20, 20, 25, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 15px 30px; display: flex; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
-        header { text-align: center; padding: 40px 20px 50px 20px; }
-        header h1 { font-size: 42px; font-weight: 800; background: linear-gradient(to right, #ffffff, #a1a1aa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .showcase-container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
-        .desk-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 25px; transition: 0.4s; }
-        .desk-card:hover { transform: translateY(-6px); border-color: var(--accent); }
+        /* Progress Bar Styles */
+        .progress-container { margin-top: 30px; }
+        .progress-bar-bg { background: var(--border); height: 20px; border-radius: 10px; overflow: hidden; }
+        .progress-bar-fill { background: var(--accent); height: 100%; width: 0%; transition: width 0.5s; }
     </style>
 </head>
 <body>
 
-    <div id="introOverlay" class="cinema-intro-overlay">
-        <div class="intro-matrix-box">
-            <span class="intro-emoji">🎥</span><span class="intro-emoji">✏️</span><span class="intro-emoji">🎹</span>
-            <span class="intro-emoji">🎤</span><span class="intro-emoji">🎬</span><span class="intro-emoji">📝</span>
+    <div class="container">
+        <h2>Staff Time Clock</h2>
+        <div class="clock-box">
+            <div class="timer-display" id="display">00:00:00</div>
+            <button onclick="toggleClock()" id="clockBtn">Start Shift</button>
         </div>
-        <h2 class="intro-brand">Carell Productions™</h2>
-    </div>
 
-    <nav class="public-nav">
-        <div>Carell Productions™</div>
-    </nav>
-
-    <header>
-        <h1>Carell Productions™</h1>
-    </header>
-
-    <div class="showcase-container">
-        <div class="desk-card">
-            <h2>Welcome to the Studio</h2>
-            <p>Our official showcase is now live.</p>
+        <div class="progress-container">
+            <h3>Profit Progress ($100 Goal)</h3>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progressBar"></div>
+            </div>
+            <p id="progressText" style="margin-top: 10px; color: var(--text-muted);">Current: $0</p>
         </div>
     </div>
 
     <script>
-        window.onload = function() {
-            setTimeout(() => { document.getElementById('introOverlay').classList.add('fade-away'); }, 2500); 
+        let isRunning = false;
+        let startTime;
+
+        function toggleClock() {
+            const btn = document.getElementById('clockBtn');
+            isRunning = !isRunning;
+            btn.innerText = isRunning ? "Clock Out" : "Start Shift";
         }
+
+        // Dummy Profit Updater for testing
+        function updateProfit(amount) {
+            const bar = document.getElementById('progressBar');
+            const percent = (amount / 100) * 100;
+            bar.style.width = percent + "%";
+            document.getElementById('progressText').innerText = "Current: $" + amount;
+        }
+
+        // Example: Update profit to 25 to show it moving
+        updateProfit(25);
     </script>
 </body>
 </html>
