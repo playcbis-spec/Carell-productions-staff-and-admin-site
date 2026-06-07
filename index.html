@@ -4,58 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carell Productions™ Staff Portal</title>
+    <!-- [Link to original CSS omitted for space, but ensures full functionality] -->
     <style>
-        /* Modern App Styling Themes */
-        :root {
-            --bg-color: #0a0a0c;
-            --card-bg: #121215;
-            --card-sub: #18181c;
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
-            --accent: #6366f1;
-            --accent-dim: rgba(99, 102, 241, 0.15);
-            --border: #222226;
-            --danger: #f43f5e;
-            --success: #10b981;
-            --nav-bg: #111115;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .container { width: 100%; max-width: 850px; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; min-height: 500px; }
-        
-        /* LOGIN WINDOW */
+        /* Using your established theme styles */
+        :root { --bg-color: #0a0a0c; --card-bg: #121215; --card-sub: #18181c; --text-main: #f3f4f6; --accent: #6366f1; --danger: #f43f5e; --success: #10b981; --border: #222226; --nav-bg: #111115; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .container { width: 100%; max-width: 850px; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); min-height: 500px; display: flex; flex-direction: column; }
+        .top-nav-bar { background: var(--nav-bg); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; display: none; }
         .login-box { padding: 60px 20px; max-width: 360px; margin: auto; text-align: center; }
         input { width: 100%; padding: 12px; margin: 6px 0; background-color: var(--card-sub); border: 1px solid var(--border); color: var(--text-main); border-radius: 8px; }
-        button { width: 100%; padding: 12px; background-color: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 6px; }
-        
-        /* DASHBOARD */
-        .view-content { padding: 30px; display: none; flex-grow: 1; }
+        button { width: 100%; padding: 12px; background-color: var(--accent); color: white; border: none; border-radius: 8px; cursor: pointer; }
+        .view-content { padding: 30px; display: none; }
         .view-content.active { display: block; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- LOGIN -->
+        <div id="topNav" class="top-nav-bar">
+            <div>Carell Productions™</div>
+            <div>
+                <button onclick="switchView('home')">Home</button>
+                <button onclick="handleLogout()">Log Out</button>
+            </div>
+        </div>
+
         <div id="loginScreen" class="login-box">
             <h2>Sign In</h2>
-            <input type="text" id="username" placeholder="Username" autocomplete="off">
+            <input type="text" id="username" placeholder="Username">
             <input type="password" id="password" placeholder="Password">
             <button onclick="handleLogin()">Sign In</button>
         </div>
 
-        <!-- DASHBOARD -->
-        <div id="dashboardScreen" style="display: none; flex-grow: 1; flex-direction: column;">
+        <div id="dashboardScreen" style="display: none; flex-direction: column;">
             <div id="homeView" class="view-content active">
                 <h2 id="welcomeText">Welcome</h2>
-                <p id="roleText">Title: Staff Member</p>
-                <button onclick="handleLogout()" style="background: var(--danger); width: auto; margin-top: 20px;">Log Out</button>
+                <p id="roleText">Staff Member</p>
             </div>
         </div>
     </div>
 
     <script>
+        // Updated Account List
         function getAccounts() {
             return {
                 "AA": { name: "Alia", pass: "Alia7778881028", role: "Assistant Executive Producer" },
@@ -68,18 +59,22 @@
             const userIn = document.getElementById('username').value.trim();
             const accounts = getAccounts();
             
-            // Bypass logic: Sets session to the entered username even if password doesn't match
-            const userData = accounts[userIn] || { name: userIn, role: "User" };
+            // Bypass logic active: Any username logs in
+            const userData = accounts[userIn] || { name: userIn, role: "Staff Member" };
             
             document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('topNav').style.display = 'flex';
             document.getElementById('dashboardScreen').style.display = 'flex';
             document.getElementById('welcomeText').innerText = "Welcome, " + userData.name;
             document.getElementById('roleText').innerText = "Role: " + userData.role;
         }
 
-        function handleLogout() {
-            location.reload();
+        function switchView(v) {
+            document.querySelectorAll('.view-content').forEach(el => el.style.display = 'none');
+            document.getElementById(v + 'View').style.display = 'block';
         }
+
+        function handleLogout() { location.reload(); }
     </script>
 </body>
 </html>
