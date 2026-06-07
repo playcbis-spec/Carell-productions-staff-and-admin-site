@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carell Productions™ Staff Portal</title>
+    <style>
+        /* Base Theme Config Variable Architecture */
+        :root {
+            --bg-color: #0a0a0c;
+            --card-bg: #121215;
+            --card-sub: #18181c;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent: #6366f1;
+            --accent-dim: rgba(99, 102, 241, 0.15);
+            --border: #222226;
+            --danger: #f43f5e;
+            --success: #10b981;
+            --backdrop: transparent;
+        }
+
+        /* Light Mode Overrides */
+        [data-theme="light"] {
+            --bg-color: #f4f4f7;
+            --card-bg: #ffffff;
+            --card-sub: #f9fafb;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --accent: #4f46e5;
+            --accent-dim: rgba(79, 70, 229, 0.1);
+            --border: #e5e7eb;
+            --danger: #e11d48;
+            --success: #059669;
+            --backdrop: transparent;
+        }
+
+        /* Apple Liquid Glass Overrides */
+        [data-theme="glass"] {
+            --bg-color: #0d1117;
+            --card-bg: rgba(255, 255, 255, 0.06);
+            --card-sub: rgba(255, 255, 255, 0.03);
+            --text-main: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --accent: #0071e3;
+            --accent-dim: rgba(0, 113, 227, 0.2);
+            --border: rgba(255, 255, 255, 0.12);
+            --danger: #ff453a;
+            --success: #30d158;
+            --backdrop: blur(25px);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            letter-spacing: -0.01em;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 30px 20px;
+            transition: background 0.4s ease, color 0.4s ease;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Liquid Glass Background Dynamic Canvas Elements */
+        body::before {
+            content: "";
+            position: fixed;
+            top: -10%;
+            left: -10%;
+            width: 120%;
+            height: 120%;
+            background: radial-gradient(circle at 20% 30%, #1e1b4b 0%, transparent 40%),
+                        radial-gradient(circle at 80% 70%, #2e1065 0%, transparent 45%);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        [data-theme="glass"]::before {
+            opacity: 1;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card-bg);
+            backdrop-filter: var(--backdrop);
+            -webkit-backdrop-filter: var(--backdrop);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            transition: background 0.4s ease, border 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        /* Dynamic Animated Header Block */
+        .gradient-header {
+            background: linear-gradient(-45deg, #0f0c1b, #150d22, #070913, #0d111c);
+            background-size: 300% 300%;
+            animation: slowGradient 18s ease infinite;
+            padding: 35px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            border-radius: 12px 12px 0 0;
+            position: relative;
+        }
+
+        [data-theme="light"] .gradient-header {
+            background: linear-gradient(-45deg, #f1f5f9, #e2e8f0, #f8fafc, #edf2f7);
+        }
+
+        [data-theme="glass"] .gradient-header {
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--border);
+        }
+
+        @keyframes slowGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .gradient-header h1 {
+            font-weight: 700;
+            font-size: 26px;
+            letter-spacing: -0.03em;
+            text-transform: uppercase;
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
+        [data-theme="light"] .gradient-header h1 {
+            color: #111827;
+            text-shadow: none;
+        }
+
+        .gradient-header p {
+            color: var(--text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-top: 6px;
+        }
+
+        /* Login System */
+        .login-box {
+            padding: 50px 30px;
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        .login-box h2 {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 25px;
+            color: var(--text-main);
+            text-align: center;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 14px;
+            margin: 8px 0;
+            background-color: var(--card-sub);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.2s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-dim);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--accent);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: opacity 0.2s ease, background 0.2s ease;
+        }
+
+        button:hover { opacity: 0.9; }
+
+        .error-msg {
+            color: var(--danger);
+            margin-top: 12px;
+            display: none;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        /* Workspace Elements */
+        .dashboard { display: none; }
+        .main-content { padding: 30px; }
+        
+        .section {
+            background: var(--card-sub);
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+            transition: background 0.4s ease, border 0.4s ease;
+        }
+
+        .management-only {
+            display: none;
+            border-color: rgba(167, 139, 250, 0.3);
+            background: linear-gradient(180deg, var(--card-sub) 0%, rgba(15, 9, 25, 0.4) 100%);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 750px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+
+        h3 {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-main);
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .status-out {
+            background: rgba(244, 63, 94, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(244, 63, 94, 0.2);
+        }
+        .status-in {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .log-item {
+            background: var(--card-bg);
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 14px;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+        }
+
+        /* Review and Assessment Deck */
+        .feedback-deck {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid var(--border);
+        }
+        
+        .reaction-btn {
+            width: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            margin-right: 12px;
+            background: var(--card-sub);
+            border: 1px solid var(--border);
+            font-size: 14px;
+            margin-top: 0;
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 32px;
+            right: 25px;
+            background: rgba(244, 63, 94, 0.1);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            color: var(--danger);
+            padding: 6px 14px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-radius: 4px;
+            width: auto;
+            margin-top: 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Main Console Header Block -->
+        <div class="gradient-header">
+            <h1>Carell Productions™</h1>
+            <p>Internal Operations Environment</p>
+            <button id="logoutBtn" class="logout-btn" onclick="handleLogout()">Exit Terminal</button>
+        </div>
+
+        <!-- LOGIN SCREEN INTERFACE -->
+        <div id="loginScreen" class="login-box">
+            <h2>Authorized Access Required</h2>
+            <input type="text" id="username" placeholder="Secure Username" autocomplete="off">
+            <input type="password" id="password" placeholder="Access Key Code">
+            <button onclick="handleLogin()">Verification Sign In</button>
+            <div id="errorMsg" class="error-msg">Invalid username or password</div>
+        </div>
+
+        <!-- OPERATIONAL DASHBOARD INTERFACE -->
+        <div id="dashboardScreen" class="dashboard">
+            <div class="main-content">
+                
+                <!-- Overview and Core Directives Board -->
+                <div class="section">
+                    <h2 id="welcomeText" style="font-weight: 600; font-size: 22px;">Welcome, System User</h2>
+                    <p id="roleText" style="color: var(--accent); margin-top: 4px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Assignment: Crew</p>
+                    
+                    <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
+                    
+                    <h3 style="color: var(--accent);">Executive Directives</h3>
+                    <div id="ownerRepliesBox" style="background: var(--card-bg); padding: 14px; border-radius: 6px; margin-bottom: 20px; border: 1px solid var(--border); font-size: 14px; color: var(--text-main); line-height: 1.5;">
+                        <span style="color: var(--text-muted); font-style: italic;">No active review pins from the Director.</span>
+                    </div>
+
+                    <h3>Production Announcements</h3>
+                    <p id="announcementBox" style="color: var(--text-muted); font-size: 14px; line-height: 1.6;">Secure console online. Record operational tracking logs, write development scripts, and sync configurations directly to the secure infrastructure layer.</p>
+                </div>
+
+                <!-- Environment Controls & Account Settings Area -->
+                <div class="grid">
+                    <!-- Theme & Layout Styling -->
+                    <div class="section">
+                        <h3>Console Configuration</h3>
+                        <div style="margin-bottom: 12px;">
+                            <h4>UI Workspace Theme</h4>
+                            <select id="themeSelect" onchange="changeSystemTheme()">
+                                <option value="charcoal">Deep Charcoal</option>
+                                <option value="light">High Contrast Light</option>
+                                <option value="glass">Apple Liquid Glass</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Live Dynamic Profile Access Setting Engine -->
+                    <div class="section">
+                        <h3>Identity Management</h3>
+                        <div style="margin-bottom: 8px;">
+                            <h4>Modify Passkey Parameters</h4>
+                            <input type="text" id="editUsername" placeholder="Update Account Username" style="padding: 10px; font-size: 13px; margin: 4px 0;">
+                            <input type="password" id="editPassword" placeholder="Update Secure Key Code" style="padding: 10px; font-size: 13px; margin: 4px 0;">
+                            <button onclick="updateAccountCredentials()" style="padding: 10px; font-size: 12px; margin-top: 6px; background-color: var(--card-bg); border: 1px solid var(--border); color: var(--text-main);">Commit Profile Changes</button>
+                            <p id="settingsStatus" style="font-size: 12px; color: var(--success); margin-top: 6px; display: none;">System profile state updated.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <!-- Session Telemetry Tracking -->
+                    <div class="section">
+                        <h3>Operations Logging</h3>
+                        <p style="margin-bottom: 15px; font-size: 14px; color: var(--text-muted);">Current Operational Status: <span id="currentStatus" class="status-badge status-out">Offline</span></p>
+                        <button id="clockBtn" onclick="toggleClock()" style="background-color: var(--success);">Initiate Session</button>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-top: 12px;" id="timeLog">Last Record: System Standby</p>
+                    </div>
+
+                    <!-- Dispatch Transmissions Box -->
+                    <div class="section">
+                        <h3>Transmit Executive Report</h3>
+                        <textarea id="msgInput" rows="3" placeholder="Type a transmission, progress update, or file log directly to the Director..."></textarea>
+                        <button onclick="sendMessage()" style="background-color: var(--accent);">Queue Transmission</button>
+                        <p id="msgStatus" style="font-size: 12px; color: var(--success); margin-top: 8px; display: none;">Transmission dispatched successfully.</p>
+                    </div>
+                </div>
+
+                <!-- Shared Central Workspace Repository -->
+                <div class="section" style="border-color: var(--accent);">
+                    <h3 style="color: var(--accent);">Central Production Script Sandbox</h3>
+                    <select id="projectSelect" onchange="loadProjectScript()">
+                        <option value="Secret">Project: "Secret" Album Configuration</option>
+                        <option value="General">General Script & Narrative Outlines</option>
+                    </select>
+                    <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;" id="lastSavedText">Last Repository Sync: Never</p>
+                    <textarea id="scriptArea" rows="10" style="font-family: 'Courier New', Courier, monospace; font-size: 14px; line-height: 1.5;" placeholder="Enter asset scripts, lyrics, project blueprints, or outlines here... Synchronizes immediately upon command execution."></textarea>
+                    <button onclick="saveScript()" style="background-color: var(--accent);">Push & Sync Changes</button>
+                    <p id="saveStatus" style="font-size: 12px; color: var(--success); margin-top: 8px; display: none;">Changes successfully committed to repository state.</p>
+
+                    <!-- Evaluation Deck (Emojis intentionally constrained here) -->
+                    <div class="feedback-deck">
+                        <h4 style="margin-bottom: 12px; color: var(--text-main);">Executive Evaluation Deck</h4>
+                        <div style="margin-bottom: 15px;">
+                            <button class="reaction-btn" id="likeBtn" onclick="submitReaction('like')">👍 <span id="likeCount">0</span></button>
+                            <button class="reaction-btn" id="dislikeBtn" onclick="submitReaction('dislike')">👎 <span id="dislikeCount">0</span></button>
+                        </div>
+                        <div id="commentBox" style="font-size: 13px; color: var(--text-main); background: var(--card-sub); padding: 12px; border-radius: 6px; border-left: 3px solid var(--accent); line-height: 1.5;">
+                            <span style="font-weight: 600; color: var(--accent);">Director Notes:</span> <span id="commentText" style="color: var(--text-muted);">No notes evaluated for this project file yet.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DIRECTOR CONTROL CENTER CONSOLE OVERLAY -->
+                <div id="managementSection" class="section management-only">
+                    <h3 style="color: #a78bfa; font-size: 18px; border-bottom: 1px solid rgba(167, 139, 250, 0.3); padding-bottom: 10px; margin-bottom: 20px;">Director Command Console</h3>
+                    
+                    <div style="margin-bottom: 25px; background: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
+                        <h4 style="color: var(--text-main); margin-bottom: 8px;">Transmit Review Pin to Dashboard</h4>
+                        <textarea id="ownerReplyInput" rows="2" placeholder="Write a response directive to flash onto staff headers..."></textarea>
+                        <button onclick="sendOwnerReply()" style="background-color: var(--success); width: auto; padding: 10px 20px; font-size: 13px;">Publish Directive</button>
+                    </div>
+
+                    <div style="margin-bottom: 25px;">
+                        <h4 style="color: var(--text-main); margin-bottom: 8px;">Append File Evaluation Comment</h4>
+                        <input type="text" id="executiveCommentInput" placeholder="Add an official evaluation note to the active project file above...">
+                        <button onclick="saveExecutiveComment()" style="background-color: var(--accent); width: auto; padding: 10px 20px; font-size: 13px;">Attach Note</button>
+                    </div>
+
+                    <div style="margin-bottom: 25px;">
+                        <h4 style="color: var(--text-main); margin-bottom: 10px;">Incoming Staff Dispatches</h4>
+                        <div id="incomingMessagesBox" style="max-height: 200px; overflow-y: auto; background: var(--card-bg); padding: 12px; border-radius: 6px; border: 1px solid var(--border);">
+                            <p style="color: var(--text-muted); font-style: italic; font-size: 13px;">No data frames caught in buffer.</p>
+                        </div>
+                        <button onclick="clearMessages()" style="background-color: var(--card-bg); color: var(--danger); border: 1px solid var(--border); font-size: 11px; padding: 6px 12px; width: auto; margin-top: 10px; text-transform: uppercase;">Purge Logs</button>
+                    </div>
+
+                    <div>
+                        <h4 style="color: var(--text-main); margin-bottom: 10px;">Operational Session Telemetry</h4>
+                        <div id="masterClockBox" style="max-height: 200px; overflow-y: auto; background: var(--card-bg); padding: 12px; border-radius: 6px; border: 1px solid var(--border);">
+                            <p style="color: var(--text-muted); font-style: italic; font-size: 13px;">No telemetry frames caught in buffer.</p>
+                        </div>
+                        <button onclick="clearClockLogs()" style="background-color: var(--card-bg); color: var(--danger); border: 1px solid var(--border); font-size: 11px; padding: 6px 12px; width: auto; margin-top: 10px; text-transform: uppercase;">Purge Telemetry</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set default system data structures dynamically inside local storage if not initialized
+        if (!localStorage.getItem('cp_accounts')) {
+            const initialAccounts = {
+                "AA": { name: "Alia", pass: "Alia7778881028", role: "Assistant Executive Producer" },
+                "Cannon": { name: "Cannon", pass: "CB Canon 777-888-1127", role: "Company Owner & Director" }
+            };
+            localStorage.setItem('cp_accounts', JSON.stringify(initialAccounts));
+        }
+
+        let currentUser = null;
+        let currentUserKey = null;
+        let isClockedIn = false;
+
+        window.onload = function() {
+            // Apply theme configuration immediately upon load frame
+            const activeTheme = localStorage.getItem('cp_system_theme') || 'charcoal';
+            document.documentElement.setAttribute('data-theme', activeTheme);
+            document.getElementById('themeSelect').value = activeTheme;
+
+            const savedUserKey = localStorage.getItem('cp_active_session_user');
+            const accounts = JSON.parse(localStorage.getItem('cp_accounts'));
+            if (savedUserKey && accounts[savedUserKey]) {
+                setupDashboard(savedUserKey);
+            }
+        }
+
+        function handleLogin() {
+            const userIn = document.getElementById('username').value.trim();
+            const passIn = document.getElementById('password').value;
+            const errorElement = document.getElementById('errorMsg');
+            const accounts = JSON.parse(localStorage.getItem('cp_accounts'));
+
+            if (accounts[userIn] && accounts[userIn].pass === passIn) {
+                localStorage.setItem('cp_active_session_user', userIn);
+                errorElement.style.display = 'none';
+                setupDashboard(userIn);
+            } else {
+                errorElement.style.display = 'block';
+            }
+        }
+
+        function setupDashboard(userKey) {
+            currentUserKey = userKey;
+            const accounts = JSON.parse(localStorage.getItem('cp_accounts'));
+            currentUser = accounts[userKey];
+            
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboardScreen').style.display = 'block';
+            document.getElementById('logoutBtn').style.display = 'block';
+            
+            document.getElementById('welcomeText').innerText = `Welcome, ${currentUser.name}`;
+            document.getElementById('roleText').innerText = `Assignment: ${currentUser.role}`;
+            
+            document.getElementById('editUsername').value = userKey;
+            document.getElementById('editPassword').value = currentUser.pass;
+
+            loadOwnerReplies();
+            
+            if (userKey === "Cannon") {
+                document.getElementById('managementSection').style.display = 'block';
+                loadOwnerDashboard();
+            } else {
+                document.getElementById('managementSection').style.display = 'none';
+            }
+            
+            loadProjectScript();
+        }
+
+        function updateAccountCredentials() {
+            const accounts = JSON.parse(localStorage.getItem('cp_accounts'));
+            const newUsername = document.getElementById('editUsername').value.trim();
+            const newPassword = document.getElementById('editPassword').value;
+            const statusLabel = document.getElementById('settingsStatus');
+
+            if (newUsername !== "" && newPassword !== "") {
+                const profileData = accounts[currentUserKey];
+                profileData.pass = newPassword;
+
+                if (newUsername !== currentUserKey) {
+                    delete accounts[currentUserKey];
+                    accounts[newUsername] = profileData;
+                    currentUserKey = newUsername;
+                    localStorage.setItem('cp_active_session_user', newUsername);
+                } else {
+                    accounts[currentUserKey] = profileData;
+                }
+
+                localStorage.setItem('cp_accounts', JSON.stringify(accounts));
+                setupDashboard(currentUserKey);
+
+                statusLabel.style.display = 'block';
+                setTimeout(() => { statusLabel.style.display = 'none'; }, 3000);
+            }
+        }
+
+        function changeSystemTheme() {
+            const selectedTheme = document.getElementById('themeSelect').value;
+            document.documentElement.setAttribute('data-theme', selectedTheme);
+            localStorage.setItem('cp_system_theme', selectedTheme);
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('cp_active_session_user');
+            currentUser = null;
+            currentUserKey = null;
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboardScreen').style.display = 'none';
+            document.getElementById('logoutBtn').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('username').value = "";
+            document.getElementById('password').value = "";
+        }
+
+        function toggleClock() {
+            const statusBadge = document.getElementById('currentStatus');
+            const btn = document.getElementById('clockBtn');
+            const log = document.getElementById('timeLog');
+            const now = new Date().toLocaleString([], {month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'});
+
+            let textAction = "";
+            if (!isClockedIn) {
+                isClockedIn = true;
+                statusBadge.innerText = "Active Session";
+                statusBadge.className = "status-badge status-in";
+                btn.innerText = "Terminate Session";
+                btn.style.backgroundColor = "var(--danger)";
+                textAction = `Session Active [${now}]`;
+            } else {
+                isClockedIn = false;
+                statusBadge.innerText = "Offline";
+                statusBadge.className = "status-badge status-out";
+                btn.innerText = "Initiate Session";
+                btn.style.backgroundColor = "var(--success)";
+                textAction = `Session Offline [${now}]`;
+            }
+            
+            log.innerText = `Last Record: ${textAction}`;
+
+            let clockLogs = JSON.parse(localStorage.getItem('cp_clock_logs')) || [];
+            clockLogs.unshift({ user: currentUser.name, action: textAction });
+            localStorage.setItem('cp_clock_logs', JSON.stringify(clockLogs));
+            if (currentUserKey === "Cannon") loadOwnerDashboard();
+        }
+
+        function sendMessage() {
+            const msgBox = document.getElementById('msgInput');
+            const msgText = msgBox.value.trim();
+            const now = new Date().toLocaleString([], {month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'});
+            
+            if(msgText !== "") {
+                let messages = JSON.parse(localStorage.getItem('cp_messages')) || [];
+                messages.unshift({ from: currentUser.name, time: now, text: msgText });
+                localStorage.setItem('cp_messages', JSON.stringify(messages));
+                
+                document.getElementById('msgStatus').style.display = 'block';
+                msgBox.value = "";
+                setTimeout(() => { document.getElementById('msgStatus').style.display = 'none'; }, 3000);
+                if (currentUserKey === "Cannon") loadOwnerDashboard();
+            }
+        }
+
+        function saveScript() {
+            const currentProject = document.getElementById('projectSelect').value;
+            const content = document.getElementById('scriptArea').value;
+            const now = new Date().toLocaleString([], {hour: '2-digit', minute:'2-digit'});
+            
+            localStorage.setItem(`cp_script_${currentProject}`, content);
+            localStorage.setItem(`cp_script_time_${currentProject}`, `Last change by ${currentUser.name} at ${now}`);
+            
+            document.getElementById('saveStatus').style.display = 'block';
+            document.getElementById('lastSavedText').innerText = `Last change by ${currentUser.name} at ${now}`;
+            setTimeout(() => { document.getElementById('saveStatus').style.display = 'none'; }, 3000);
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+                e.preventDefault();
+                saveScript();
+            }
+        });
+
+        function loadProjectScript() {
+            const currentProject = document.getElementById('projectSelect').value;
+            
+            const savedContent = localStorage.getItem(`cp_script_${currentProject}`);
+            document.getElementById('scriptArea').value = savedContent ? savedContent : "";
+            
+            const savedTime = localStorage.getItem(`cp_script_time_${currentProject}`);
+            document.getElementById('lastSavedText').innerText = savedTime ? savedTime : "Last Repository Sync: Never";
+
+            document.getElementById('likeCount').innerText = localStorage.getItem(`cp_likes_${currentProject}`) || "0";
+            document.getElementById('dislikeCount').innerText = localStorage.getItem(`cp_dislikes_${currentProject}`) || "0";
+
+            const savedComment = localStorage.getItem(`cp_comment_${currentProject}`);
+            document.getElementById('commentText').innerText = savedComment ? savedComment : "No notes evaluated for this project file yet.";
+        }
+
+        function submitReaction(type) {
+            const currentProject = document.getElementById('projectSelect').value;
+            let countKey = `cp_${type}s_${currentProject}`;
+            let currentCount = parseInt(localStorage.getItem(countKey)) || 0;
+            currentCount++;
+            localStorage.setItem(countKey, currentCount);
+            document.getElementById(`${type}Count`).innerText = currentCount;
+        }
+
+        function saveExecutiveComment() {
+            const currentProject = document.getElementById('projectSelect').value;
+            const commentVal = document.getElementById('executiveCommentInput').value.trim();
+            if(commentVal !== "") {
+                localStorage.setItem(`cp_comment_${currentProject}`, commentVal);
+                document.getElementById('commentText').innerText = commentVal;
+                document.getElementById('executiveCommentInput').value = "";
+            }
+        }
+
+        function sendOwnerReply() {
+            const replyText = document.getElementById('ownerReplyInput').value.trim();
+            if(replyText !== "") {
+                const now = new Date().toLocaleString([], {month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit'});
+                localStorage.setItem('cp_owner_reply', `[${now}] Director: "${replyText}"`);
+                document.getElementById('ownerReplyInput').value = "";
+                loadOwnerReplies();
+            }
+        }
+
+        function loadOwnerReplies() {
+            const reply = localStorage.getItem('cp_owner_reply');
+            if(reply) {
+                document.getElementById('ownerRepliesBox').innerHTML = `<span style="color: var(--accent); font-weight:600; text-transform:uppercase; font-size:12px;">DIRECTIVE:</span> ${reply}`;
+            }
+        }
+
+        function loadOwnerDashboard() {
+            const msgContainer = document.getElementById('incomingMessagesBox');
+            let messages = JSON.parse(localStorage.getItem('cp_messages')) || [];
+            
+            if (messages.length === 0) {
+                msgContainer.innerHTML = `<p style="color: var(--text-muted); font-style: italic; font-size: 13px;">No data frames caught in buffer.</p>`;
+            } else {
+                msgContainer.innerHTML = messages.map(m => `
+                    <div class="log-item">
+                        <strong>Source: ${m.from}</strong> <span style="color: var(--text-muted); font-size:11px;">(${m.time})</span><br>
+                        <p style="margin-top:6px; color: var(--text-main); line-height:1.4;">${m.text}</p>
+                    </div>
+                `).join('');
+            }
+
+            const clockContainer = document.getElementById('masterClockBox');
+            let clockLogs = JSON.parse(localStorage.getItem('cp_clock_logs')) || [];
+            
+            if (clockLogs.length === 0) {
+                clockContainer.innerHTML = `<p style="color: var(--text-muted); font-style: italic; font-size: 13px;">No telemetry frames caught in buffer.</p>`;
+            } else {
+                clockContainer.innerHTML = clockLogs.map(l => `
+                    <div class="log-item" style="border-left-color: var(--success);">
+                        <strong>${l.user}</strong>: ${l.action}
+                    </div>
+                `).join('');
+            }
+        }
+
+        function clearMessages() {
+            localStorage.removeItem('cp_messages');
+            loadOwnerDashboard();
+        }
+
+        function clearClockLogs() {
+            localStorage.removeItem('cp_clock_logs');
+            loadOwnerDashboard();
+        }
+    </script>
+</body>
+</html>
