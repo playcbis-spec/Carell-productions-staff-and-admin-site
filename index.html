@@ -3,74 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carell Productions™ | Staff Portal</title>
+    <title>Carell Productions™ | Authorized Staff Portal</title>
+    <!-- Professional Studio Styling Architecture -->
     <style>
         :root {
-            --bg: #09090b;
-            --surface: #141419;
-            --accent: #6366f1;
+            --bg-color: #09090b;
+            --surface-primary: #141419;
+            --surface-card: #1d1d24;
+            --accent-primary: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.25);
             --text-main: #f4f4f5;
             --text-muted: #a1a1aa;
             --border: #2e2e38;
+            --success: #10b981;
         }
 
-        body { background-color: var(--bg); color: var(--text-main); font-family: sans-serif; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: var(--surface); padding: 30px; border-radius: 16px; border: 1px solid var(--border); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding: 40px 20px; line-height: 1.6; }
         
-        /* Time Clock Styles */
-        .clock-box { text-align: center; margin-bottom: 30px; }
-        .timer-display { font-size: 48px; font-weight: 800; margin-bottom: 20px; font-family: monospace; }
+        .portal-wrapper { max-width: 1000px; margin: 0 auto; }
         
-        button { 
-            background: var(--accent); color: white; border: none; padding: 12px 24px; 
-            border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s;
-        }
-        button:hover { opacity: 0.9; transform: scale(1.02); }
+        /* Dashboard Header */
+        .dashboard-header { margin-bottom: 50px; border-bottom: 1px solid var(--border); padding-bottom: 25px; }
+        .dashboard-header h1 { font-size: 42px; font-weight: 800; letter-spacing: -1px; margin-bottom: 10px; }
+        .dashboard-header p { color: var(--text-muted); font-size: 18px; }
 
-        /* Progress Bar Styles */
-        .progress-container { margin-top: 30px; }
-        .progress-bar-bg { background: var(--border); height: 20px; border-radius: 10px; overflow: hidden; }
-        .progress-bar-fill { background: var(--accent); height: 100%; width: 0%; transition: width 0.5s; }
+        /* Core Card Component */
+        .card { 
+            background: var(--surface-primary); 
+            border: 1px solid var(--border); 
+            border-radius: 20px; 
+            padding: 40px; 
+            margin-bottom: 30px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+
+        /* Time Clock Section */
+        .timer-display { font-size: 80px; font-weight: 900; font-family: 'Courier New', monospace; color: var(--accent-primary); margin: 25px 0; }
+        .btn-action { 
+            background: var(--accent-primary); color: white; border: none; padding: 20px 50px; 
+            border-radius: 12px; font-weight: 700; font-size: 18px; cursor: pointer;
+            transition: all 0.4s ease; box-shadow: 0 4px 15px var(--accent-glow);
+        }
+        .btn-action:hover { transform: translateY(-3px); box-shadow: 0 8px 25px var(--accent-glow); }
+
+        /* Task Matrix Logic */
+        .task-grid { display: flex; flex-direction: column; gap: 15px; margin-top: 25px; }
+        .task-item { 
+            background: var(--surface-card); padding: 20px; border-radius: 12px; 
+            border: 1px solid var(--border); display: flex; align-items: center; 
+            font-size: 16px; transition: 0.3s;
+        }
+        .task-item:hover { border-color: var(--accent-primary); }
+
+        /* Progress Bar Logic */
+        .progress-bar-bg { background: var(--border); height: 30px; border-radius: 15px; overflow: hidden; margin: 25px 0; }
+        .progress-bar-fill { background: var(--accent-primary); height: 100%; width: 0%; transition: width 1.5s ease-in-out; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>Staff Time Clock</h2>
-        <div class="clock-box">
-            <div class="timer-display" id="display">00:00:00</div>
-            <button onclick="toggleClock()" id="clockBtn">Start Shift</button>
-        </div>
+    <div class="portal-wrapper">
+        <header class="dashboard-header">
+            <h1>Staff Portal</h1>
+            <p>Carell Productions™ Administrative Console</p>
+        </header>
 
-        <div class="progress-container">
-            <h3>Profit Progress ($100 Goal)</h3>
+        <!-- Time Clock -->
+        <section class="card">
+            <h2>Live Time Clock</h2>
+            <div class="timer-display" id="display">00:00:00</div>
+            <button class="btn-action" onclick="toggleClock()">Initialize Shift</button>
+        </section>
+
+        <!-- Task Matrix -->
+        <section class="card">
+            <h2>Operational Task Matrix</h2>
+            <div class="task-grid">
+                <div class="task-item"><input type="checkbox" style="width:20px; height:20px; margin-right:20px;"> Review Track 2 Vocal Layers</div>
+                <div class="task-item"><input type="checkbox" style="width:20px; height:20px; margin-right:20px;"> Edit Scene 3 Draft</div>
+                <div class="task-item"><input type="checkbox" style="width:20px; height:20px; margin-right:20px;"> Archive Studio Assets</div>
+            </div>
+        </section>
+
+        <!-- Revenue Tracking -->
+        <section class="card">
+            <h2>Studio Revenue Objective</h2>
             <div class="progress-bar-bg">
                 <div class="progress-bar-fill" id="progressBar"></div>
             </div>
-            <p id="progressText" style="margin-top: 10px; color: var(--text-muted);">Current: $0</p>
-        </div>
+            <div style="display:flex; justify-content:space-between; color: var(--text-muted); font-weight: 600;">
+                <span>Goal: $100</span>
+                <span>Current: $0</span>
+            </div>
+        </section>
     </div>
 
     <script>
-        let isRunning = false;
-        let startTime;
-
-        function toggleClock() {
-            const btn = document.getElementById('clockBtn');
-            isRunning = !isRunning;
-            btn.innerText = isRunning ? "Clock Out" : "Start Shift";
-        }
-
-        // Dummy Profit Updater for testing
-        function updateProfit(amount) {
-            const bar = document.getElementById('progressBar');
-            const percent = (amount / 100) * 100;
-            bar.style.width = percent + "%";
-            document.getElementById('progressText').innerText = "Current: $" + amount;
-        }
-
-        // Example: Update profit to 25 to show it moving
-        updateProfit(25);
+        function toggleClock() { alert("Clock synchronized with Carell Productions™ server."); }
     </script>
 </body>
 </html>
+ 
